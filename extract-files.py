@@ -48,8 +48,11 @@ lib_fixups: lib_fixups_user_type = {
 }
 
 blob_fixups: blob_fixups_user_type = {
+    'system_ext/lib64/libwfdcommonutils.so': blob_fixup()
+        .remove_needed('libheif.so'),
     'system_ext/lib64/libwfdnative.so': blob_fixup()
-        .add_needed('libinput_shim.so'),
+        .add_needed('libinput_shim.so')
+        .remove_needed('android.hidl.base@1.0.so'),
     'system_ext/lib64/libwfdmmsrc_system.so': blob_fixup()
         .add_needed('libaudiobase.so')
         .add_needed('libgui_shim.so'),
@@ -89,6 +92,11 @@ blob_fixups: blob_fixups_user_type = {
         .add_needed('libui_shim.so'),
     'system_ext/lib64/vendor.qti.hardware.qccsyshal@1.2-halimpl.so': blob_fixup()
         .replace_needed('libprotobuf-cpp-full.so', 'libprotobuf-cpp-full-21.7.so'),
+    'system_ext/etc/seccomp_policy/tcmd.policy': blob_fixup()
+        .regex_replace(
+            r'(?m)^nanosleep: 1$',
+            'nanosleep: 1\nlseek: 1',
+        ),
     (
         'vendor/bin/hw/vendor.qti.camera.provider@2.7-service_64',
         'vendor/lib64/camx.device@3.4-ext-impl.so',
