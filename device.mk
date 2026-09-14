@@ -411,9 +411,12 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.sensor.stepdetector.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.sensor.stepdetector.xml
 
 # Shipping API
-BOARD_SHIPPING_API_LEVEL := 32
+BOARD_SHIPPING_API_LEVEL := 33
 PRODUCT_SHIPPING_API_LEVEL := $(BOARD_SHIPPING_API_LEVEL)
 
+# SELinux Treble labeling legacy violations
+PRODUCT_SELINUX_TREBLE_LABELING_TRACKING_LIST_FILE := \
+    device/nothing/Pong/sepolicy/treble_labeling_tracking_list.yaml
 # Sku properties
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/sku/build_CAPE.prop:$(TARGET_COPY_OUT_ODM)/etc/build_CAPE.prop \
