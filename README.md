@@ -2,10 +2,10 @@
 
 Device configuration for the **Nothing Phone (2)** (`Pong`) targeting **Android 17 / LineageOS 24.0**.
 
-> **Status:** community / development bring-up  
-> **Branch:** `lineage-24.0`  
-> **Android:** 17  
-> **Device:** Nothing Phone (2)  
+> **Status:** community / development bring-up<br>
+> **Branch:** `lineage-24.0`<br>
+> **Android:** 17<br>
+> **Device:** Nothing Phone (2)<br>
 > **Codename:** `Pong`
 
 This is not an official LineageOS-supported device tree.
