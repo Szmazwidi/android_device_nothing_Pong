@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <remote
+        name="github-pong"
+        fetch="https://github.com/" />
+
+    <!--
+        Known-good Android 17 snapshot.
+
+        Pong-specific committed revisions captured on 2026-09-14.
+        This overlay alone does not pin the platform or include local changes.
+        For source reproduction use the full snapshot and accompanying patches.
+    -->
+
+    <project
+        name="Szmazwidi/android_device_nothing_Pong"
+        path="device/nothing/Pong"
+        remote="github-pong"
+        revision="c9425ecc64ac12e9fd1dc040c5a119d4e23d865a"
+        upstream="lineage-24.0" />
+
+    <project
+        name="Szmazwidi/android_vendor_nothing_Pong"
+        path="vendor/nothing/Pong"
+        remote="github-pong"
+        revision="98f9d0c45cc65c85700b5c4d060d40f212777ade"
+        upstream="lineage-24.0" />
+
+    <project
+        name="Szmazwidi/android_kernel_nothing_sm8475"
+        path="kernel/nothing/sm8475"
+        remote="github-pong"
+        revision="8b2c0753904d99b4d340ace6b0ba64961a6dfe0c"
+        upstream="lineage-24.0" />
+
+    <project
+        name="Pong-Development/kernel_nothing_sm8475-modules"
+        path="kernel/nothing/sm8475-modules"
+        remote="github-pong"
+        revision="d34593c143cae9f3fd0419fc0f2c88d51c1eca2e"
+        upstream="test" />
+
+    <project
+        name="Nothing-phone-2-Development/android_kernel_nothing_sm8475-devicetrees"
+        path="kernel/nothing/sm8475-devicetrees"
+        remote="github-pong"
+        revision="4b06eb8d7c0bbc548a5f3336ac201e4fb29ccaf8"
+        upstream="lineage-23.0" />
+
+    <project
+        name="Pong-Development/hardware_dolby"
+        path="hardware/dolby"
+        remote="github-pong"
+        revision="d3f3d0e1e009bc1faebc9e4c4209e216777aa326"
+        upstream="16" />
+
+    <!-- Replace the display HAL supplied by the base LineageOS manifest. -->
+    <remove-project path="hardware/qcom-caf/sm8450/display" />
+
+    <project
+        name="Pong-Development/hardware_qcom-caf_sm8450_display"
+        path="hardware/qcom-caf/sm8450/display"
+        remote="github-pong"
+        revision="030e10b9e8ab9c40d26c9560dc8649417ff0dc05"
+        upstream="16.2" />
+
+    <project
+        name="Pong-Development/packages_apps_GlyphAdapter"
+        path="packages/apps/GlyphAdapter"
+        remote="github-pong"
+        revision="9f43981b04189d8ec2026673153fb807b4b74b7c"
+        upstream="16" />
+
+    <project
+        name="Pong-Development/packages_apps_ParanoidGlyph"
+        path="packages/apps/ParanoidGlyphPhone2"
+        remote="github-pong"
+        revision="81443b0faebc7290c240a6f1b00ddc0c3fc39965"
+        upstream="17" />
+</manifest>

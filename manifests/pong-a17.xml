@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <remote
+        name="github-pong"
+        fetch="https://github.com/" />
+
+    <!-- Android 17 Pong trees maintained by Szmazwidi -->
+    <project
+        name="Szmazwidi/android_device_nothing_Pong"
+        path="device/nothing/Pong"
+        remote="github-pong"
+        revision="lineage-24.0"
+        upstream="lineage-24.0"
+        dest-branch="lineage-24.0" />
+
+    <project
+        name="Szmazwidi/android_vendor_nothing_Pong"
+        path="vendor/nothing/Pong"
+        remote="github-pong"
+        revision="lineage-24.0"
+        upstream="lineage-24.0"
+        dest-branch="lineage-24.0" />
+
+    <project
+        name="Szmazwidi/android_kernel_nothing_sm8475"
+        path="kernel/nothing/sm8475"
+        remote="github-pong"
+        revision="lineage-24.0"
+        upstream="lineage-24.0"
+        dest-branch="lineage-24.0" />
+
+    <!-- Upstream dependencies used by the current Android 17 tree -->
+    <project
+        name="Pong-Development/kernel_nothing_sm8475-modules"
+        path="kernel/nothing/sm8475-modules"
+        remote="github-pong"
+        revision="test"
+        upstream="test"
+        dest-branch="test" />
+
+    <project
+        name="Nothing-phone-2-Development/android_kernel_nothing_sm8475-devicetrees"
+        path="kernel/nothing/sm8475-devicetrees"
+        remote="github-pong"
+        revision="lineage-23.0"
+        upstream="lineage-23.0"
+        dest-branch="lineage-23.0" />
+
+    <project
+        name="Pong-Development/hardware_dolby"
+        path="hardware/dolby"
+        remote="github-pong"
+        revision="16"
+        upstream="16"
+        dest-branch="16" />
+
+    <!-- Replace the display HAL supplied by the base LineageOS manifest. -->
+    <remove-project path="hardware/qcom-caf/sm8450/display" />
+
+    <project
+        name="Pong-Development/hardware_qcom-caf_sm8450_display"
+        path="hardware/qcom-caf/sm8450/display"
+        remote="github-pong"
+        revision="16.2"
+        upstream="16.2"
+        dest-branch="16.2" />
+
+    <project
+        name="Pong-Development/packages_apps_GlyphAdapter"
+        path="packages/apps/GlyphAdapter"
+        remote="github-pong"
+        revision="16"
+        upstream="16"
+        dest-branch="16" />
+
+    <project
+        name="Pong-Development/packages_apps_ParanoidGlyph"
+        path="packages/apps/ParanoidGlyphPhone2"
+        remote="github-pong"
+        revision="17"
+        upstream="17"
+        dest-branch="17" />
+</manifest>

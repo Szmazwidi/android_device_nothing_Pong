@@ -1,0 +1,13 @@
+diff --git a/src/org/lineageos/lineageparts/input/BacklightTimeoutSeekBar.java b/src/org/lineageos/lineageparts/input/BacklightTimeoutSeekBar.java
+index 43893ed8202a9c5e103df2dcad2352e25277c656..2cec78e48e7fce0e0210bc7c23efbe53546eacda 100644
+--- a/src/org/lineageos/lineageparts/input/BacklightTimeoutSeekBar.java
++++ b/src/org/lineageos/lineageparts/input/BacklightTimeoutSeekBar.java
+@@ -44,7 +44,7 @@ public class BacklightTimeoutSeekBar extends SeekBar {
+         super.setMax(max + 2 * mGap - 1);
+     }
+ 
+-    @Override
++    // Android 17 no longer exposes updateTouchProgress as an overridable hook.
+     protected int updateTouchProgress(int lastProgress, int newProgress) {
+         if (newProgress < mMax) {
+             return newProgress;

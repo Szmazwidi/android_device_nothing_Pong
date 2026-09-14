@@ -12,24 +12,42 @@ This is not an official LineageOS-supported device tree.
 
 ## Repositories
 
-The Android 17 bring-up currently uses the following maintained forks:
+The following nine Pong-specific projects were verified against the local checkout,
+`.repo/local_manifests/pong.xml`, the resolved manifest and public branch tips on
+2026-09-14. The three maintained forks use `lineage-24.0`.
 
-| Component | Repository | Branch |
+| Checkout path | Repository | Tracking branch |
 | --- | --- | --- |
-| Device | `Szmazwidi/android_device_nothing_Pong` | `lineage-24.0` |
-| Vendor | `Szmazwidi/android_vendor_nothing_Pong` | `lineage-24.0` |
-| Kernel | `Szmazwidi/android_kernel_nothing_sm8475` | `lineage-24.0` |
+| `device/nothing/Pong` | [Szmazwidi/android_device_nothing_Pong](https://github.com/Szmazwidi/android_device_nothing_Pong) | `lineage-24.0` |
+| `vendor/nothing/Pong` | [Szmazwidi/android_vendor_nothing_Pong](https://github.com/Szmazwidi/android_vendor_nothing_Pong) | `lineage-24.0` |
+| `kernel/nothing/sm8475` | [Szmazwidi/android_kernel_nothing_sm8475](https://github.com/Szmazwidi/android_kernel_nothing_sm8475) | `lineage-24.0` |
+| `kernel/nothing/sm8475-modules` | [Pong-Development/kernel_nothing_sm8475-modules](https://github.com/Pong-Development/kernel_nothing_sm8475-modules) | `test` |
+| `kernel/nothing/sm8475-devicetrees` | [Nothing-phone-2-Development/android_kernel_nothing_sm8475-devicetrees](https://github.com/Nothing-phone-2-Development/android_kernel_nothing_sm8475-devicetrees) | `lineage-23.0` |
+| `hardware/dolby` | [Pong-Development/hardware_dolby](https://github.com/Pong-Development/hardware_dolby) | `16` |
+| `hardware/qcom-caf/sm8450/display` | [Pong-Development/hardware_qcom-caf_sm8450_display](https://github.com/Pong-Development/hardware_qcom-caf_sm8450_display) | `16.2` |
+| `packages/apps/GlyphAdapter` | [Pong-Development/packages_apps_GlyphAdapter](https://github.com/Pong-Development/packages_apps_GlyphAdapter) | `16` |
+| `packages/apps/ParanoidGlyphPhone2` | [Pong-Development/packages_apps_ParanoidGlyph](https://github.com/Pong-Development/packages_apps_ParanoidGlyph) | `17` |
 
-Kernel modules and kernel devicetrees currently remain based on their existing upstream repositories because no local Android 17-specific changes were required there.
+The base manifest is `LineageOS/android`, branch `lineage-24.0`; the audited
+manifest commit is `ad6b6d6bfc16cb0cd3c39db18685a72a6a43985a`.
+It supplies the remaining platform dependencies, including Qualcomm common/audio,
+Google interfaces and power libraries, Lineage interfaces, vendor Qualcomm sources,
+SEPolicy and the `clang-r563880c` toolchain. Do not replace them with guessed device forks.
 
-The source tree also uses existing Pong development repositories for components such as:
+The display project replaces `hardware/qcom-caf/sm8450/display` from the base
+manifest. Install only one Pong local manifest at a time.
 
-- kernel modules
-- kernel devicetrees
-- Dolby hardware support
-- Qualcomm SM8450 display HAL
-- GlyphAdapter
-- ParanoidGlyphPhone2
+| Manifest | Purpose |
+| --- | --- |
+| [pong-a17.xml](manifests/pong-a17.xml) | Tracks the verified branches; platform and dependencies may advance. |
+| [pong-a17-known-good.xml](manifests/pong-a17-known-good.xml) | Pins nine Pong project commits only; the base platform still floats. |
+| [pong-a17-full-known-good.xml](manifests/pong-a17-full-known-good.xml) | Full resolved snapshot of 1,245 projects, used with the captured local patches below. |
+
+**The nine-project overlay alone does not reproduce the working tree.** The audit
+found uncommitted changes in 13 projects (101 files), including required platform
+build fixes and a missing comma in Dolby. These are included in
+[the snapshot patch bundle](manifests/patches/series.json), with original revisions
+and before/after SHA-256 checksums. See [snapshot notes](manifests/README.md).
 
 ## Android 17 changes
 
@@ -110,40 +128,150 @@ The `lineage-24.0` branch also contains Android 17 bring-up adjustments includin
 
 ## Building
 
-A complete compatible Android / LineageOS source tree is required.
+### Host preparation
 
-The current Android 17 configuration uses:
+Use an x86-64 Linux host, a case-sensitive filesystem, Bash, Git, Git LFS, Python 3
+and the Google `repo` launcher. Follow the official
+[Android host setup](https://source.android.com/docs/setup/start/initializing) and
+[hardware requirements](https://source.android.com/docs/setup/start/requirements).
+The audited build host uses CachyOS; distro-specific package names differ.
+Install your distro's Android build dependencies before syncing. The tree includes
+its Java and Clang prebuilts; do not substitute a host compiler for the pinned kernel compiler.
 
-- product: `lineage_Pong`
-- release: `cp2a`
-- variant: `userdebug`
+For Ubuntu, the AOSP host package list plus the tools used in this guide is:
 
-Initialize the build environment:
+```bash
+sudo apt-get update
+sudo apt-get install git-core gnupg flex bison build-essential zip curl \
+  zlib1g-dev libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev \
+  libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig \
+  git-lfs python3 repo
+```
+
+AOSP currently recommends at least 400 GB free disk space and 64 GB RAM.
+Allow additional space for retained outputs and caches. These are upstream host
+recommendations, not a measured minimum for Pong.
+
+Check the tools before continuing:
+
+```bash
+git --version
+git lfs version
+python3 --version
+repo version
+```
+
+### Recommended: reproduce the captured source state
+
+Use a **new, empty source directory**. Keep the support checkout next to it:
+the pinned device commit predates these instructions and does not contain the new
+manifest/patch files. The separate checkout prevents them disappearing during sync.
+
+```bash
+mkdir -p pong-build
+cd pong-build
+git clone --branch lineage-24.0 --single-branch \
+  https://github.com/Szmazwidi/android_device_nothing_Pong.git pong-build-support
+# Record this commit alongside build artifacts; it identifies this manifest/patch bundle.
+git -C pong-build-support rev-parse HEAD
+mkdir android17
+cd android17
+repo init -u "$(cd ../pong-build-support && pwd)" -b lineage-24.0 \
+  -m manifests/pong-a17-full-known-good.xml --git-lfs --no-clone-bundle
+repo sync -c -j4 --fail-fast
+```
+
+This full manifest is standalone: **do not add any Pong local manifest** to it.
+All fetch URLs are absolute public URLs. Avoid shallow history for the snapshot:
+some pinned revisions are older than the latest branch tip.
+
+Download LFS objects for every project that uses them, then verify the vendor blobs:
+
+```bash
+repo forall -c '
+  lfs_files=$(git lfs ls-files) || exit 1
+  if [ -n "$lfs_files" ]; then
+    git lfs pull && git lfs fsck || exit 1
+  fi
+'
+git -C vendor/nothing/Pong lfs ls-files
+git -C vendor/nothing/Pong lfs fsck
+```
+
+The vendor repository contains six LFS-managed camera libraries. Entries in
+`git lfs ls-files` must have `*` (materialized content), not `-` (pointer files).
+A successful Git checkout with unresolved LFS pointers is insufficient for building.
+Do not set `GIT_LFS_SKIP_SMUDGE=1` unless you subsequently fetch and check out the objects.
+
+Apply the captured local changes before selecting the target:
+
+```bash
+python3 ../pong-build-support/manifests/apply-snapshot.py --check
+python3 ../pong-build-support/manifests/apply-snapshot.py
+```
+
+The helper checks all affected project HEADs, patch checksums and file contents
+before writing. It accepts an already fully applied bundle and refuses unexpected
+or partly applied changes. It does not commit changes. Keep these patches after
+sync; they are part of this source snapshot.
+
+### Select the product and build
+
+From the Android source root, after syncing and applying the snapshot patches:
 
 ```bash
 source build/envsetup.sh
 lunch lineage_Pong cp2a userdebug
-```
-
-The legacy combined syntax is also accepted by the current build system:
-
-```bash
-lunch lineage_Pong-cp2a-userdebug
-```
-
-Build the ROM with:
-
-```bash
 m bacon
 ```
 
-Individual images can also be built during development, for example:
+`source build/envsetup.sh` runs the device's `vendorsetup.sh`, which reconstructs
+`vendor/nothing/Pong/proprietary/vendor/lib64/libhyperzoom.arcsoft.so` from the
+tracked `.part*` files. Do not bypass this step. The legacy lunch syntax
+`lunch lineage_Pong-cp2a-userdebug` is also supported by the audited build system.
+
+Outputs are under `out/target/product/Pong/`, including the LineageOS ZIP.
+Development image targets are `m bootimage vendorbootimage dtboimage`.
+Save the build log, support checkout commit, resolved manifest and patch bundle
+with your outputs. A manifest records commits, not uncommitted patches:
 
 ```bash
-m bootimage vendorbootimage dtboimage
+repo manifest -r -o out/pong-build-resolved.xml
+repo status > out/pong-build-status.txt
 ```
 
-Before building, make sure all required Pong vendor, kernel, kernel modules, kernel devicetrees and hardware repositories are present at compatible revisions.
+The snapshot captures the audited source state; it is not a claim of byte-identical
+ZIP reproduction. Timestamps, signing keys, host environment and build options
+also affect outputs. This packaging has not yet been tested by a new full clean build.
+
+### Tracking branches for development
+
+For a separate fresh checkout that follows upstream updates:
+
+```bash
+mkdir android17-current
+cd android17-current
+repo init -u https://github.com/LineageOS/android.git -b lineage-24.0 \
+  --git-lfs --no-clone-bundle
+mkdir -p .repo/local_manifests
+curl --fail --location \
+  https://raw.githubusercontent.com/Szmazwidi/android_device_nothing_Pong/lineage-24.0/manifests/pong-a17.xml \
+  -o .repo/local_manifests/pong.xml
+repo sync -c -j4 --fail-fast
+```
+
+Run the LFS steps above. This mode is for development, and is not the known-good
+source recipe. The platform fixes captured above may need rebasing as branches
+advance; the snapshot helper deliberately refuses different project revisions.
+The nine-project pinned overlay can be used instead by downloading
+`pong-a17-known-good.xml` into the same `.repo/local_manifests/pong.xml` filename,
+but it still does not pin the platform or replace the full snapshot procedure.
+
+For an existing checkout, review `.repo/local_manifests/` before migration. Do not
+install these alongside an older `pong.xml` or a generated `roomservice.xml` that
+already declares these paths. Preserve local changes; use a fresh directory when
+switching between this snapshot and tracking branches. Do not use `--force-sync`
+as a routine fix for duplicate projects or changed remotes.
 
 ## Firmware and proprietary files
 

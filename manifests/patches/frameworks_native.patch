@@ -1,0 +1,27 @@
+diff --git a/services/inputflinger/tests/FakeInputDispatcherPolicy.cpp b/services/inputflinger/tests/FakeInputDispatcherPolicy.cpp
+index 79499332695294824d47c79e5295116992f74534..75c3ac61df8c51dc9a4e2d821a013aacad9423e9 100644
+--- a/services/inputflinger/tests/FakeInputDispatcherPolicy.cpp
++++ b/services/inputflinger/tests/FakeInputDispatcherPolicy.cpp
+@@ -566,7 +566,8 @@ void FakeInputDispatcherPolicy::notifySwitch(nsecs_t when, uint32_t switchValues
+ }
+ 
+ void FakeInputDispatcherPolicy::pokeUserActivity(nsecs_t eventTime, int32_t eventType,
+-                                                 ui::LogicalDisplayId displayId) {
++                                                 ui::LogicalDisplayId displayId,
++                                                   int32_t /*keyCode*/) {
+     std::scoped_lock lock(mLock);
+     mNotifyUserActivity.notify_all();
+     mUserActivityPokeEvents.push({eventTime, eventType, displayId});
+diff --git a/services/inputflinger/tests/FakeInputDispatcherPolicy.h b/services/inputflinger/tests/FakeInputDispatcherPolicy.h
+index 677e1f02da28d16e050bef29e84409d252dc3dfc..e53e450e0df0ea805f16f24157f27fa73a59ca98 100644
+--- a/services/inputflinger/tests/FakeInputDispatcherPolicy.h
++++ b/services/inputflinger/tests/FakeInputDispatcherPolicy.h
+@@ -235,7 +235,7 @@ private:
+     void notifySwitch(nsecs_t when, uint32_t switchValues, uint32_t switchMask,
+                       uint32_t policyFlags) override;
+     void pokeUserActivity(nsecs_t eventTime, int32_t eventType,
+-                          ui::LogicalDisplayId displayId) override;
++                          ui::LogicalDisplayId displayId, int32_t keyCode) override;
+     bool isStaleEvent(nsecs_t currentTime, nsecs_t eventTime) override;
+     void onPointerDownOutsideFocus(const sp<IBinder>& newToken) override;
+     void setPointerCapture(const PointerCaptureRequest& request) override;
