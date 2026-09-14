@@ -1,0 +1,13 @@
+diff --git a/scripts/gen_build_prop.py b/scripts/gen_build_prop.py
+index e7ef5906d602d8fae9babe2918627989067837a6..f0fd87320caf7e0dc6b3d706c567e3a0eee5b3a4 100644
+--- a/scripts/gen_build_prop.py
++++ b/scripts/gen_build_prop.py
+@@ -449,7 +449,7 @@ def append_additional_vendor_props(args):
+   if config["RecoveryDefaultRotation"]:
+     props.append(f"ro.minui.default_rotation={config['RecoveryDefaultRotation']}")
+ 
+-  if config["RecoveryDefaultTouchRotation"]:
++  if config.get("RecoveryDefaultTouchRotation"):
+     props.append(f"ro.minui.default_touch_rotation={config['RecoveryDefaultTouchRotation']}")
+ 
+   if config["RecoveryOverscanPercent"]:

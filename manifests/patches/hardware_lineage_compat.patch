@@ -1,0 +1,12 @@
+diff --git a/Android.bp b/Android.bp
+index 1af7c43e81f7702cca9149f6acb1f416b108e423..1dce80277040a87dad5f721e547a55d6972fbb9c 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -577,6 +577,7 @@ cc_library_shared {
+     shared_libs: [
+         "android.media.audio.common.types-V5-cpp",
+         "audioclient-types-aidl-cpp",
++        "libaudiobase",
+         "libaudioclient",
+         "libaudiofoundation",
+         "libutils",
