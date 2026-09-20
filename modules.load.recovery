@@ -92,8 +92,6 @@ nfc_i2c.ko
 cpuprime_online_helper.ko
 msm_sysstats.ko
 zsmalloc.ko
-lzo.ko
-lzo-rle.ko
 msm_show_resume_irq.ko
 mhi_cntrl_qcom.ko
 mhi.ko
