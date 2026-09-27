@@ -26,6 +26,7 @@ allow glyph_app {
   vendor_perf_service
   vibrator_manager_service
   voiceinteraction_service
+  virtual_device_native_service
   virtual_device_service
 }:service_manager find;
 
