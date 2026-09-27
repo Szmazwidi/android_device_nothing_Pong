@@ -56,3 +56,6 @@
 
 /dev/aw86927_haptic                                                       u:object_r:aac_richtap_device:s0
 /vendor/bin/hw/android\.hardware\.vibrator\.service\.pong\.richtap     u:object_r:hal_vibrator_default_exec:s0
+
+# GPU frequency control
+/sys/devices/platform/soc/3d00000\.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk    u:object_r:sysfs_kgsl_gpuclk:s0
