@@ -1,0 +1,2 @@
+# Allow vendor init scripts to control the Nothing OTG switch.
+allow vendor_init proc_charger:file write;
