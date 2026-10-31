@@ -1,0 +1,3 @@
+# With netlink_xperm (Android 17 policy on Linux 6.18) every rtnetlink message type is
+# checked; netmgrd creates and addresses rmnet_data links.
+allowxperm vendor_netmgrd self:netlink_route_socket nlmsg { RTM_NEWLINK RTM_GETLINK RTM_NEWADDR RTM_DELADDR };
