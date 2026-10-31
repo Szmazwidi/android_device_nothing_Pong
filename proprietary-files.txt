@@ -364,8 +364,8 @@ vendor/lib64/camera/components/com.arcsoft.node.picauto.so|688c527ec3275c7637d66
 vendor/lib64/camera/components/com.arcsoft.node.smooth_transition.so|284e5b2ecdf06dc6566fee36655bb02d2323ac28
 vendor/lib64/camera/components/com.arcsoft.node.videosn.so|6edb4d667e258882c06403a7449efab7dcb5291b
 vendor/lib64/camera/components/com.bots.node.vendortagwrite.so|d6ed62aa5219293f7b90c245f02d84df6b6ea7e3
-vendor/lib64/camera/components/com.morpho.node.previeweis.so|4682e6df1687e1bf7e01a900e16649ea0fa02ef5
-vendor/lib64/camera/components/com.morpho.node.videoeis.so|1b01dcd415d90b471df184a7451f2f87759c0db2
+vendor/lib64/camera/components/com.morpho.node.previeweis.so|44658347ce848f7ce12973b19ca68b50139556f6
+vendor/lib64/camera/components/com.morpho.node.videoeis.so|3b7900fce4da8f20a168b84cca34155f70f6b0f9
 vendor/lib64/camera/components/com.nothing.node.motion.so|03528ca52203f5adc03f3249ca4bb22ccd0c611e
 vendor/lib64/camera/components/com.qti.camx.chiiqutils.so|18b7c5d87c48290040ecd45ca790dfb9f6b65389
 vendor/lib64/camera/components/com.qti.eisv2.so|68a5af1a38d90afb7ea0bf8e955d61c72559e923
@@ -549,8 +549,8 @@ vendor/lib64/camera/fdconfigpreviewlite.bin|72a645511aeeecc8eb0e46b0432877ba238e
 vendor/lib64/camera/fdconfigvideo.bin|153086a8aee83782129ed570b1d59f77f92a6f3d
 vendor/lib64/camera/fdconfigvideolite.bin|89b2449653f6f26b68bf4fbbfad3371519a2ec03
 vendor/lib64/camera/imx588.pb|9cd132bad1f2aedddbb5fa6aad047ecd33c77e1b
-vendor/lib64/hw/camera.qcom.so|a75e5218c0062240e5f13d01bfcbef77b811482f
-vendor/lib64/hw/com.qti.chi.override.so|ea5a778b1f0adf49cb750f5b2997a7583df93ab6
+vendor/lib64/hw/camera.qcom.so|09d996591b3dae489a48f6f2ba3544ed5a134c2f
+vendor/lib64/hw/com.qti.chi.override.so|84575c20147a2108d982db185f40f51d1c0aa007
 vendor/lib64/camera.device@1.0-impl.so|4e2c03612ddb21420c2a3ce424d78ade4dffe5c7
 vendor/lib64/camx.device@3.2-impl.so|6e43fac9bc78483a33ca0c201cdb7f3f042d9e65
 vendor/lib64/camx.device@3.3-impl.so|bba5e6489842b462e8d186947d397410fe249649
@@ -710,7 +710,7 @@ vendor/lib64/libntcamskia.so;DISABLE_CHECKELF|41a926f796536a29deaa43b7275d4d8f5a
 vendor/lib64/libntcamthread.so|f671779fdc7640fc11cc14297b68349d234703dc
 vendor/lib64/libntcamultrahdr.so|7eb2b32a5a4fe1a2980f12bdc53d29974cbc61e6
 vendor/lib64/libntcamyuv.so|4c82adb47a481e266167e083505355ab61c64bfb
-vendor/lib64/libntf.so|abcd1def3261eb920fd7ab4fb56bf18f69e1e9ab
+vendor/lib64/libntf.so|0e404496c835a13ebe9ec72e0137fadc30980c69
 vendor/lib64/libntofflinepostproc.so|9dbe0e8bb7cc4ceedec812db2ab8853d3964e357
 vendor/lib64/libomp.so|1a4c5c338cb2a8775331a5b2e2b3a5de9c1658c6
 vendor/lib64/libopencv.so|c629750abff764b3f2533d0142bbf851ed997d8b
@@ -1730,7 +1730,7 @@ vendor/lib64/liboemaids_vendor.so|874d66d8a4426a2563d8f62631ab77a11a17839b
 vendor/lib64/libpdmapper.so|6fd229ae569468fb0ad5a7a272c4cbcabfabf235
 vendor/lib64/libpdnotifier.so|697fa8eaf5962955aceaac836a9474700d633655
 vendor/lib64/libqcrilDataModule.so|2f79aa9bdcaa1779c8f8df1ce53088f26b84b51b
-vendor/lib64/libqcrilNr.so|b566a7c8c80a56581a459640e997b39dad8ed786|70676a6b2c82ac35b4a5d8ee202858bf678e46db
+vendor/lib64/libqcrilNr.so|1ffa7c9e6c3c113a9aed22c577c738933d14d567|3a647cbb5a04e0ffd5650ea8581b57d142c4981c
 vendor/lib64/libqcrilNrCellInfoModule.so|283b61cad07e0bea40d090aafe2dbe8fb5ebc895
 vendor/lib64/libqcrilNrFramework.so|12b8b47702ae110805c9ce30b9fa78e6cba6a9d6
 vendor/lib64/libqcrilNrImsModule.so|d01d54cbd56b79cc878e9a8f7f93f5986559ce0c
