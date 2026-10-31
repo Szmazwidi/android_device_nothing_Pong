@@ -46,13 +46,14 @@ case "$baseband" in
     "msm" | "csfb" | "svlte2a" | "mdm" | "mdm2" | "sglte" | "sglte2" | "dsda2" | "unknown" | "dsda3" | "sdm" | "sdx" | "sm6")
     case "$datamode" in
         "tethered")
-            start vendor.dataqti
+            # No /dev/rmnet_ctrl without the USB GSI driver (Linux 6.18)
+            [ -e /dev/rmnet_ctrl ] && start vendor.dataqti
             if [ "$low_ram" != "true" ]; then
               start vendor.dataadpl
             fi
             ;;
         "concurrent")
-            start vendor.dataqti
+            [ -e /dev/rmnet_ctrl ] && start vendor.dataqti
             if [ "$low_ram" != "true" ]; then
               start vendor.dataadpl
             fi
