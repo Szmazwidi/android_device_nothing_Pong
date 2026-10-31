@@ -236,6 +236,7 @@ PRODUCT_PACKAGES += \
     init.nt.hw.rc \
     init.nt.hw.rc.recovery \
     init.nt.rc \
+    init.pong618.rc \
     init.qcom.early_boot.sh \
     init.kernel.post_boot.sh \
     init.kernel.post_boot-cape.sh \

@@ -1,0 +1,259 @@
+#
+# Copyright (C) 2026 The LineageOS Project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# Linux 6.18 (TARGET_PONG_KERNEL=6.18): module load order and runtime settings of the
+# tested bring-up (CLS36). Only the first-stage set is in modules.load; everything below
+# needs another driver or a DSP to be up first, or must exist before a given HAL starts.
+# Every trigger requires ro.vendor.pong.kernel=6.18 (vendor_6.18.prop).
+
+service vendor.pong618-dsp /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules smp2p qcom_glink_smem qcom_q6v5_pas qrtr_smd
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
+service vendor.pong618-battery /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules qti_battery_charger
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
+service vendor.pong618-bluetooth /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules msm_geni_serial btpower
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
+service vendor.pong618-wireless /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules qrtr_mhi qca_cld3_qca6490
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
+# SLPI (sensor_pd) loader and the legacy FastRPC for SDSP/ADSP with its qcom,adsp heap
+service vendor.pong618-sensors /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules sensors_ssc frpc_legacy_sdsp pong_adsp_heap
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 30
+
+service vendor.pong618-audiofoundation /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules q6_dlkm q6_notifier_dlkm gpr_dlkm audio_pkt_dlkm spf_core_dlkm audpkt_ion_dlkm adsp_loader_dlkm audio_prm_dlkm q6_pdr_dlkm snd_event_dlkm frpc_legacy_sdsp frpc_adsprpc cdsp_loader
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
+service vendor.pong618-btaudio /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules bam_dma slimbus slim_qcom_ngd_ctrl bt_fm_slim
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 60
+
+service vendor.pong618-audio /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules wcd_core_dlkm wcd9xxx_dlkm swr_dlkm mbhc_dlkm stub_dlkm pinctrl_lpi_dlkm lpass_cdc_dlkm swr_ctrl_dlkm lpass_cdc_tx_macro_dlkm lpass_cdc_rx_macro_dlkm lpass_cdc_va_macro_dlkm lpass_cdc_wsa_macro_dlkm lpass_cdc_wsa2_macro_dlkm wcd938x_dlkm wcd938x_slave_dlkm wsa883x_dlkm swr_dmic_dlkm swr_haptics_dlkm tfa98xx_dlkm msm_ext_display hdmi_dlkm machine_dlkm
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 60
+
+service vendor.pong618-mobile /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules rmnet_mem rmnet_core rmnet_ctl gsim ipam ipanetm
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 60
+
+service vendor.pong618-cpufreq /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules qcom-cpufreq-hw
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 8
+
+service vendor.pong618-memory /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules pong_mem_hotplug
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 10
+
+service vendor.pong618-peripherals /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules haptic leds-aw20036 nfc-qti-i2c
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 60
+
+# videocc first, or the vidc context banks probe only when the camera path loads it
+service vendor.pong618-video /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules videocc_sm8450 msm_video
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 30
+
+service vendor.pong618-fingerprint /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules goodix_fp
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 20
+
+service vendor.pong618-camera-deps /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules videocc_sm8450 leds_qti_flash msm_eva
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
+service vendor.pong618-camera /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules camcc_sm8450 videocc_sm8450 qcom_ipc_lite synx_driver camera
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 60
+
+# UFS low-power modes stay off, as in the tested 6.18 bring-up
+on boot && property:ro.vendor.pong.kernel=6.18
+    write /sys/bus/platform/devices/1d84000.ufshc/clkgate_enable 0
+    write /sys/bus/platform/devices/1d84000.ufshc/clkscale_enable 0
+    write /sys/bus/platform/devices/1d84000.ufshc/auto_hibern8 0
+    write /sys/bus/platform/devices/1d84000.ufshc/power/control on
+
+on property:init.svc.vendor.charger=running && property:ro.vendor.pong.kernel=6.18
+    write /sys/bus/platform/devices/1d84000.ufshc/clkgate_enable 0
+    write /sys/bus/platform/devices/1d84000.ufshc/clkscale_enable 0
+    write /sys/bus/platform/devices/1d84000.ufshc/auto_hibern8 0
+    write /sys/bus/platform/devices/1d84000.ufshc/power/control on
+
+on post-fs-data && property:ro.vendor.pong.kernel=6.18
+    start vendor.pong618-dsp
+    start vendor.pong618-battery
+    # QCA6490: BT first, it owns BT_EN of the shared PMU
+    exec_start vendor.pong618-bluetooth
+    start vendor.pong618-wireless
+    # system_server caches the CPU frequency table before zygote; load cpufreq before it
+    exec_start vendor.pong618-cpufreq
+    write /sys/devices/system/cpu/cpufreq/policy0/scaling_governor schedutil
+    write /sys/devices/system/cpu/cpufreq/policy4/scaling_governor schedutil
+    write /sys/devices/system/cpu/cpufreq/policy7/scaling_governor schedutil
+
+on property:init.svc.vendor.pong618-wireless=stopped && property:ro.vendor.pong.kernel=6.18
+    write /sys/bus/platform/devices/b0000000.qcom,cnss-qca6490/recovery 1
+    write /sys/bus/platform/devices/b0000000.qcom,cnss-qca6490/fs_ready 1
+
+# The stock init.vendor.sensors.rc writes boot_slpi before the PAS driver exists
+on property:init.svc.vendor.pong618-dsp=stopped && property:ro.vendor.pong.kernel=6.18
+    start vendor.pong618-sensors
+
+on property:init.svc.vendor.pong618-sensors=stopped && property:ro.vendor.pong.kernel=6.18
+    exec_background u:r:vendor_qti_init_shell_bg:s0 -- /vendor/bin/init.qti.write.sh /sys/kernel/boot_slpi/boot 1
+
+on load_persist_props_action && property:ro.vendor.pong.kernel=6.18
+    # ALSA/DSP devices before zygote and the audio HALs
+    exec_start vendor.pong618-audiofoundation
+    exec_start vendor.pong618-btaudio
+    exec_start vendor.pong618-audio
+    chown media audio /sys/kernel/snd_card/card_state
+    chown media audio /sys/kernel/aud_dev/state
+    start vendor.agm-1-0
+    start vendor.audio-hal
+    restart audioserver
+    # rmnet_ipa0 must exist before netmgrd (class main) starts
+    exec_start vendor.pong618-mobile
+    exec_start vendor.pong618-memory
+    exec_start vendor.pong618-peripherals
+    # init.nt.rc sets these at boot, before the devices exist
+    chown system system /dev/aw86927_haptic
+    chmod 0600 /dev/aw86927_haptic
+    chown system system /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/all_white_brightness
+    chmod 0666 /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/all_white_brightness
+    chown system system /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/operating_mode
+    chmod 0666 /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/operating_mode
+    chown system system /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/single_brightness
+    chmod 0666 /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/single_brightness
+    chown system system /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/frame_brightness
+    chmod 0666 /sys/devices/platform/soc/994000.i2c/i2c-0/0-003a/leds/led_strips/frame_brightness
+    chown system system /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq
+    chmod 0660 /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq
+    chown system system /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq
+    chmod 0660 /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq
+    chown system system /sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq
+    chmod 0660 /sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq
+    restart vendor.vibrator
+    # the Codec2 HAL enumerates /dev/video32/33 only when it starts
+    exec_start vendor.pong618-video
+    restart vendor-qti-media-c2-hal-1-0
+    exec_start vendor.pong618-fingerprint
+    chown system system /dev/goodix_fp
+    chmod 0600 /dev/goodix_fp
+    restart vendor.fingerprint-nothing
+
+on property:sys.boot_completed=1 && property:ro.vendor.pong.kernel=6.18
+    write /sys/bus/platform/devices/1d84000.ufshc/clkgate_enable 0
+    write /sys/bus/platform/devices/1d84000.ufshc/clkscale_enable 0
+    write /sys/bus/platform/devices/1d84000.ufshc/auto_hibern8 0
+    write /sys/bus/platform/devices/1d84000.ufshc/power/control on
+    exec_start vendor.pong618-camera-deps
+    start vendor.pong618-camera
+
+on property:init.svc.vendor.pong618-camera=stopped && property:ro.vendor.pong.kernel=6.18
+    restart vendor.camera-provider-2-7
+    # Providers that wait forever for consumers without a driver keep the boot INT_MAX
+    # DDR/NoC votes, the cluster power domain and boot clocks on. ldoc10/ldob5 (PCIe0
+    # WLAN PHY) are left to their consumers.
+    write /sys/devices/platform/soc/soc:interconnect@1/state_synced 1
+    write /sys/bus/platform/devices/19100000.interconnect/state_synced 1
+    write /sys/bus/platform/devices/1700000.interconnect/state_synced 1
+    write /sys/devices/genpd_provider/cluster-pd/state_synced 1
+    write /sys/bus/platform/devices/3d90000.clock-controller/state_synced 1
+    write /sys/bus/platform/devices/aaf0000.clock-controller/state_synced 1
+    write /sys/bus/platform/devices/ade0000.clock-controller/state_synced 1
+    write /sys/bus/platform/devices/100000.clock-controller/state_synced 1
+    write /sys/devices/platform/soc/17a00000.rsc/17a00000.rsc:drv2/17a00000.rsc:drv@2:rpmh-regulator-ldoc9/state_synced 1
+    # ufshcd keeps a 0 us CPU latency request with clock scaling off, so CPUs only WFI.
+    # 3000 us allows core C4 but not cluster power-down, which drops the PCIe0 (WLAN) link.
+    # Applied only now: deep idle during the WLAN firmware start loses the link as well.
+    write /sys/devices/system/cpu/cpu0/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu1/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu2/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu3/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu4/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu5/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu6/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/system/cpu/cpu7/power/pm_qos_resume_latency_us 3000
+    write /sys/devices/platform/soc/1d84000.ufshc/pm_qos_enable 0
+
+# Not used with 6.18: the kernel has the QRTR name service, there is no rq-stats for
+# msm_irqbalance, and without the USB GSI driver there is no /dev/rmnet_ctrl for dataqti
+# (init.class_main.sh checks that one).
+on property:init.svc.vendor.qrtr-ns=running && property:ro.vendor.pong.kernel=6.18
+    stop vendor.qrtr-ns
+
+on property:init.svc.vendor.msm_irqbalance=running && property:ro.vendor.pong.kernel=6.18
+    stop vendor.msm_irqbalance

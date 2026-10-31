@@ -32,6 +32,13 @@ prebuilt_etc {
 }
 
 prebuilt_etc {
+    name: "init.pong618.rc",
+    src: "init.pong618.rc",
+    sub_dir: "init",
+    vendor: true,
+}
+
+prebuilt_etc {
     name: "init.qcom.rc",
     src: "init.qcom.rc",
     sub_dir: "init/hw",
