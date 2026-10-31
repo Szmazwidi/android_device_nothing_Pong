@@ -1,0 +1,8 @@
+# Linux 6.18 (TARGET_PONG_KERNEL=6.18)
+ro.vendor.pong.kernel=6.18
+
+# Colours are wrong with UBWC on 6.18 (cause not found yet)
+vendor.gralloc.disable_ubwc=1
+
+# The tested 6.18 bring-up runs the audio HAL without the CMA dma-buf heap
+vendor.audio.feature.dmabuf.cma.memory.enable=false

@@ -82,6 +82,9 @@ BOARD_BOOTCONFIG := \
     androidboot.memcg=1 \
     androidboot.usbcontroller=a600000.dwc3
 
+# Kernel version: 6.18 (prebuilt android17-6.18 from device/nothing/Pong-kernel) or 5.10 (built here)
+TARGET_PONG_KERNEL ?= 6.18
+
 TARGET_KERNEL_CLANG_VERSION := r563880c
 TARGET_KERNEL_CLANG_PATH := $(abspath .)/prebuilts/clang/host/linux-x86/clang-$(TARGET_KERNEL_CLANG_VERSION)
 
@@ -90,6 +93,8 @@ BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_KERNEL_IMAGE_NAME := Image
 
+# The 5.10 tree also provides the UAPI headers (generated_kernel_headers) for the
+# QTI HALs; the 6.18 vendor drivers keep that UAPI.
 TARGET_KERNEL_SOURCE := kernel/nothing/sm8475
 TARGET_KERNEL_CONFIG := \
     gki_defconfig \
@@ -97,6 +102,28 @@ TARGET_KERNEL_CONFIG := \
     vendor/nothing/waipio_GKI.config \
     vendor/debugfs.config
 
+ifeq ($(TARGET_PONG_KERNEL),6.18)
+KERNEL_PREBUILT_DIR := device/nothing/Pong-kernel
+TARGET_FORCE_PREBUILT_KERNEL := true
+TARGET_PREBUILT_KERNEL := $(KERNEL_PREBUILT_DIR)/Image
+BOARD_PREBUILT_DTBIMAGE_DIR := $(KERNEL_PREBUILT_DIR)/dtb
+BOARD_PREBUILT_DTBOIMAGE := $(KERNEL_PREBUILT_DIR)/dtbo.img
+
+# Kernel modules (signed with the kernel's module key: never strip them)
+BOARD_VENDOR_KERNEL_MODULES := $(wildcard $(KERNEL_PREBUILT_DIR)/modules/*.ko)
+BOARD_VENDOR_KERNEL_MODULES_LOAD := $(strip $(shell cat $(KERNEL_PREBUILT_DIR)/modules.load))
+# No vendor_dlkm blocklist: the stock vendor_modprobe.sh never sets vendor.all.modules.ready
+# when it holds only comments.
+BOARD_VENDOR_KERNEL_MODULES_OPTIONS_FILE := $(KERNEL_PREBUILT_DIR)/modules.options
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(addprefix $(KERNEL_PREBUILT_DIR)/modules/,$(strip $(shell cat $(KERNEL_PREBUILT_DIR)/modules.list.vendor_boot)))
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := $(strip $(shell cat $(KERNEL_PREBUILT_DIR)/modules.load.vendor_boot))
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES_BLOCKLIST_FILE := $(KERNEL_PREBUILT_DIR)/modules.blocklist
+BOARD_VENDOR_RAMDISK_KERNEL_MODULES_OPTIONS_FILE := $(BOARD_VENDOR_KERNEL_MODULES_OPTIONS_FILE)
+BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(strip $(shell cat $(KERNEL_PREBUILT_DIR)/modules.load.recovery))
+BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
+BOARD_DO_NOT_STRIP_VENDOR_RAMDISK_MODULES := true
+BOARD_DO_NOT_STRIP_RECOVERY_MODULES := true
+else
 # Kernel modules
 BOARD_VENDOR_KERNEL_MODULES_BLOCKLIST_FILE := $(DEVICE_PATH)/modules.blocklist
 BOARD_VENDOR_KERNEL_MODULES_LOAD := $(strip $(shell cat $(DEVICE_PATH)/modules.load))
@@ -125,6 +152,7 @@ TARGET_KERNEL_EXT_MODULES := \
     qcom/opensource/eva-kernel \
     qcom/opensource/video-driver \
     qcom/opensource/wlan/qcacld-3.0/.qca6490
+endif
 
 # Metadata
 BOARD_USES_METADATA_PARTITION := true
@@ -194,6 +222,9 @@ TARGET_PRODUCT_PROP += $(DEVICE_PATH)/product.prop
 TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
 TARGET_SYSTEM_EXT_PROP += $(DEVICE_PATH)/system_ext.prop
 TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor.prop
+ifeq ($(TARGET_PONG_KERNEL),6.18)
+TARGET_VENDOR_PROP += $(DEVICE_PATH)/vendor_6.18.prop
+endif
 
 # Recovery
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
