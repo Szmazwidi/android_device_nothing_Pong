@@ -8,6 +8,14 @@
 # needs another driver or a DSP to be up first, or must exist before a given HAL starts.
 # Every trigger requires ro.vendor.pong.kernel=6.18 (vendor_6.18.prop).
 
+# Native replacements for the exact-cohort legacy guard: 6.18 provides QRTR
+# nameservice in the kernel; the 5.10 irqbalance binary uses obsolete IRQ inputs.
+# Stop before class startup, so a newly signed module cohort needs no Magisk pin
+# update to keep these incompatible daemons disabled.
+on early-init && property:ro.vendor.pong.kernel=6.18
+    stop vendor.qrtr-ns
+    stop vendor.msm_irqbalance
+
 service vendor.pong618-dsp /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules smp2p qcom_glink_smem qcom_q6v5_pas qrtr_smd
     user root
     group root system
