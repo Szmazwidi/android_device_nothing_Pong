@@ -182,17 +182,18 @@ ndk::ScopedAStatus Fingerprint::createSession(int32_t /*sensorId*/, int32_t user
         return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
     }
     *out = nullptr;
-    if (mSession && !mSession->isClosed()) {
-        return ndk::ScopedAStatus::fromExceptionCodeWithMessage(
-                EX_ILLEGAL_STATE, "Open fingerprint session already exists");
-    }
+    // Aborting restarts only this HAL; an AIDL exception here is rethrown as an
+    // unchecked IllegalStateException inside system_server.
+    CHECK(mSession == nullptr || mSession->isClosed()) << "Open session already exists!";
     // The kernel driver can become available after this service starts. Retry
     // opening it at a new session request, never construct Session with nullptr.
     if (!mDevice) mDevice = openHal();
     if (!mDevice) {
-        ALOGE("Fingerprint hardware unavailable; refusing session without crashing");
-        return ndk::ScopedAStatus::fromExceptionCodeWithMessage(
-                EX_ILLEGAL_STATE, "Fingerprint hardware unavailable");
+        // FingerprintStartUserClient only catches RemoteException. A transaction
+        // error reaches it as DeadObjectException; any AIDL exception code would
+        // crash system_server on every boot while the sensor is unavailable.
+        ALOGE("Fingerprint hardware unavailable; failing session as dead object");
+        return ndk::ScopedAStatus::fromStatus(STATUS_DEAD_OBJECT);
     }
 
     mSession = SharedRefBase::make<Session>(mDevice, userId, cb, mLockoutTracker);

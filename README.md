@@ -83,6 +83,20 @@ can recover without abandoning AIDL. This change does not erase fingerprint
 records, modify the Goodix TA, or change persist calibration. Host build validation
 and actual enrollment/authentication tests are separate requirements.
 
+Fingerprint initialization is deferred until `sys.boot_completed=1` on 6.18;
+the init action loads `goodix_fp`, applies the node ownership and restarts the
+AIDL service. Loading the module after the service has already failed to open
+hardware is insufficient unless the service retries or restarts.
+
+When the legacy device remains unavailable, `createSession` returns Binder
+`STATUS_DEAD_OBJECT`. The Android fingerprint client catches the resulting
+`RemoteException`; an AIDL `EX_ILLEGAL_STATE` instead escapes that catch and can
+crash `system_server`. This corrects the unavailable-hardware path introduced
+by `09174d8b7b3fe400a59bfb34c5a2501e98e04686`. The upstream duplicate-session
+`CHECK` is retained to contain that contract violation to the HAL process.
+This is a startup and failure-containment fix; successful initialization does
+not establish reliable enrollment or unlocking on every boot.
+
 ### Sensors AIDL candidate
 
 `PONG_SENSORS_AIDL=true` selects `android.hardware.sensors-service.nothing-aidl`.
