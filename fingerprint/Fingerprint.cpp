@@ -82,7 +82,7 @@ fingerprint_device_t* Fingerprint::openHal() {
     }
 
     auto module = reinterpret_cast<const fingerprint_module_t*>(hw_mdl);
-    if (!module->common.methods->open) {
+    if (!module->common.methods || !module->common.methods->open) {
         ALOGE("No valid open method");
         return nullptr;
     }
@@ -94,8 +94,14 @@ fingerprint_device_t* Fingerprint::openHal() {
     }
 
     auto fp_device = reinterpret_cast<fingerprint_device_t*>(device);
+    if (!fp_device || !fp_device->set_notify || !fp_device->set_active_group) {
+        ALOGE("Incomplete fingerprint device methods");
+        if (device && device->close) device->close(device);
+        return nullptr;
+    }
     if (fp_device->set_notify(fp_device, Fingerprint::notify) != 0) {
         ALOGE("Can't register fingerprint module callback");
+        if (device->close) device->close(device);
         return nullptr;
     }
 
@@ -172,8 +178,23 @@ ndk::ScopedAStatus Fingerprint::getSensorProps(std::vector<SensorProps>* out) {
 ndk::ScopedAStatus Fingerprint::createSession(int32_t /*sensorId*/, int32_t userId,
                                               const std::shared_ptr<ISessionCallback>& cb,
                                               std::shared_ptr<ISession>* out) {
-    CHECK(mSession == nullptr || mSession->isClosed()) << "Open session already exists!";
- 
+    if (!out || !cb) {
+        return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_ARGUMENT);
+    }
+    *out = nullptr;
+    if (mSession && !mSession->isClosed()) {
+        return ndk::ScopedAStatus::fromExceptionCodeWithMessage(
+                EX_ILLEGAL_STATE, "Open fingerprint session already exists");
+    }
+    // The kernel driver can become available after this service starts. Retry
+    // opening it at a new session request, never construct Session with nullptr.
+    if (!mDevice) mDevice = openHal();
+    if (!mDevice) {
+        ALOGE("Fingerprint hardware unavailable; refusing session without crashing");
+        return ndk::ScopedAStatus::fromExceptionCodeWithMessage(
+                EX_ILLEGAL_STATE, "Fingerprint hardware unavailable");
+    }
+
     mSession = SharedRefBase::make<Session>(mDevice, userId, cb, mLockoutTracker);
     *out = mSession;
 
