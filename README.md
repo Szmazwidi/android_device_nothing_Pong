@@ -1,5 +1,16 @@
 # Nothing Phone (2) — Pong
 
+
+The `pong-6.18` branch adds the Linux 6.18.59 / CLS38 prebuilt path. Its complete
+ROM source-state recipe is in the companion
+[kernel-module repository](https://github.com/Szmazwidi/android_kernel_nothing_sm8475-modules-6.18/blob/pong-a17-6.18.59/docs/rom/README.md)
+(currently access-controlled). The source snapshot/build instructions below for
+September Android 17 are historical 5.10 recipes, not the current 6.18 lockfile.
+The 2026-11-01 complete ROM was built but has not been hardware-qualified; the
+CLS38 kernel/module set has its own separate device evidence. Its physical
+write guards are specific to the development phone, so this is not yet a
+universal flashable release for every Phone (2) SKU.
+
 Device configuration for the **Nothing Phone (2)** (`Pong`) targeting **Android 17 / LineageOS 24.0**.
 
 > **Status:** community / development bring-up<br>
@@ -53,28 +64,47 @@ and before/after SHA-256 checksums. See [snapshot notes](manifests/README.md).
 
 ### Fingerprint
 
-The Android 17 branch switches the fingerprint implementation to the **HIDL 2.3 fingerprint HAL**.
+On **`pong-6.18`**, `device.mk` selects the **AIDL** service
+`android.hardware.biometrics.fingerprint-service.nothing` and
+`libudfps_extension.nothing`. The implementation is in `fingerprint/`; it links
+the fingerprint V4 NDK library and its source VINTF fragment declares version 1.
+The separate Goodix vendor extension remains HIDL 2.1.
 
-The previously used custom AIDL wrapper consistently failed during Goodix UDFPS enrollment in secure preprocessing:
+The repository also retains the HIDL 2.3 implementation in `hidl/fingerprint/`.
+Earlier testing reported successful enrollment/authentication with HIDL after
+an older AIDL integration failed Goodix secure preprocessing. That result is
+historical; it does not mean this branch currently selects HIDL or establish
+current AIDL enrollment success. Do not install both standard services together.
 
-```text
-[GF_HAL][CaEntry]: [sendCommand] QSEE TEE execute command failed.
-[GF_HAL][ShenzhenAlgo]: [enrollImage] exit. err=GF_ERROR_PREPROCESS_FAILED, errno=1011
-```
+The AIDL wrapper now refuses a session when the legacy hardware module is
+unavailable, rather than constructing a Session with a null device and crashing.
+A later session request retries opening the hardware, so late driver availability
+can recover without abandoning AIDL. This change does not erase fingerprint
+records, modify the Goodix TA, or change persist calibration. Host build validation
+and actual enrollment/authentication tests are separate requirements.
 
-Using the HIDL 2.3 service on Android 17:
+### Sensors AIDL candidate
 
-- fingerprint enrollment completes successfully;
-- fingerprint authentication works;
-- the existing Goodix TA, calibration and persist data can operate successfully.
+`PONG_SENSORS_AIDL=true` selects `android.hardware.sensors-service.nothing-aidl`.
+The default remains the tested Nothing HIDL service until the AIDL candidate has
+passed hardware qualification. Only one standard ISensors/default provider is
+selected. Both paths retain `sensors.ssc.so` and `sensors.nothing.so` from
+`configs/hals.conf`.
 
-The active service is:
+The candidate uses the AOSP stable AIDL 3 frontend with the existing Nothing
+HalProxy and event callback. This preserves the pickup-gesture normalization
+and scalar-event filter that would be lost by blindly selecting the generic
+AOSP service. Imported AOSP files, exact revision and per-file hashes are
+recorded in `sensors/aidl/provenance.json`; original author/license notices are
+retained. This is an AIDL frontend over compatible legacy sub-HALs, not a claim
+that the proprietary sub-HAL implementation has been rewritten.
 
-```text
-android.hardware.biometrics.fingerprint@2.3-service.nt.pong
-```
-
-This strongly points to the tested AIDL integration/wrapper path as the source of the enrollment failure rather than the fingerprint sensor, Goodix TA, calibration data or optical hardware path.
+The candidate binary builds successfully; offline VINTF/FCM compatibility and
+the exact new executable context check against the existing compiled SELinux
+policy pass. Before enabling it by default, qualify all hardware and Nothing
+gesture sensors, batch/flush, direct channels, wake-up acknowledgments and
+repeated suspend/resume on the phone. A successful compile is not a
+successful hardware migration.
 
 ### Wireless Display
 
@@ -119,7 +149,7 @@ The cleaned Android 17 source tree was also successfully built after applying th
 
 The `lineage-24.0` branch also contains Android 17 bring-up adjustments including:
 
-- fingerprint HAL migration to HIDL 2.3;
+- both historical HIDL 2.3 and current AIDL fingerprint implementations;
 - shipping API level aligned with the Nothing Phone (2) launch API level (`33`);
 - Android 17-compatible SELinux Treble labeling configuration;
 - separate normal and recovery init modules;
@@ -285,7 +315,7 @@ A precise minimum stock firmware requirement is not documented here yet. Use a f
 
 This is a community Android 17 bring-up and should not be treated as an official LineageOS release.
 
-The fingerprint implementation intentionally uses HIDL 2.3 because the tested custom AIDL implementation fails Goodix enrollment during secure preprocessing on Android 17.
+The `pong-6.18` fingerprint selection is AIDL. The older HIDL enrollment result and the current AIDL build/runtime qualification must be distinguished; see the fingerprint section above.
 
 Further runtime testing may reveal issues outside the functionality tested during the current bring-up.
 
