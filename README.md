@@ -348,7 +348,7 @@ The maintainer reviewed the resulting modifications, built the source and, where
 
 Debugging conclusions were additionally checked against available source code, runtime logs, binary behavior, hashes, build results and controlled A/B tests where practical.
 
-> **AI-assisted, human-reviewed, build-tested, and hardware-tested where applicable.**
+> **AI-assisted. Build, compatibility, hardware and maintainer-review status are recorded per change.**
 
 LLM assistance is treated here as another engineering and debugging tool, not as a substitute for technical review or validation.
 
