@@ -13,5 +13,9 @@ implement an OEM Binder proxy, deliver Nothing radio notifications, or replace
 testing mobile data, calls or IMS. The development phone did not expose
 `nothing.radio.ntphone` when this was prepared. Null and local-interface
 behavior were tested on a host; loading the class, the null path and referenced
-method signature were tested in an isolated Android ART process. Integration
-into the ROM and elimination of the real service crash are not yet verified.
+method signature were tested in an isolated Android ART process. The Android `nothing-fwk` target has since built successfully, and its DEX
+contains the referenced method signatures. The existing qcrilmsgtunnel package
+on the development phone already has hidden-API enforcement disabled for that
+package; no global policy or SELinux rule was changed. The complete ROM ZIP
+built before this change does not contain the shim. Integration into a running
+ROM and elimination of the real service crash are not yet verified.
