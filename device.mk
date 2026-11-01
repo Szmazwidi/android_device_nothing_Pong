@@ -392,9 +392,16 @@ PRODUCT_PACKAGES += \
     libvndfwk_detect_jni.qti_vendor # Needed by CNE app
 
 # Sensors
-PRODUCT_PACKAGES += \
-    android.hardware.sensors@2.1-service.nt-multihal \
-    sensors.nothing
+# Stable AIDL frontend is preferred; keep this candidate opt-in until hardware
+# qualification, without installing two competing ISensors/default services.
+PONG_SENSORS_AIDL ?= false
+ifeq ($(PONG_SENSORS_AIDL),true)
+PRODUCT_PACKAGES += android.hardware.sensors-service.nothing-aidl
+else
+PRODUCT_PACKAGES += android.hardware.sensors@2.1-service.nt-multihal
+endif
+
+PRODUCT_PACKAGES += sensors.nothing
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/hals.conf:$(TARGET_COPY_OUT_VENDOR)/etc/sensors/hals.conf

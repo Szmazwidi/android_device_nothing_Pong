@@ -1,0 +1,7 @@
+service vendor.sensors-hal-nothing-aidl /vendor/bin/hw/android.hardware.sensors-service.nothing-aidl
+    class hal
+    user system
+    group system wakelock context_hub input uhid audio
+    task_profiles ServiceCapacityLow
+    capabilities BLOCK_SUSPEND
+    rlimit rtprio 10 10

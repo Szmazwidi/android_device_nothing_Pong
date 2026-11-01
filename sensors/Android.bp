@@ -68,3 +68,44 @@ cc_library_shared {
     ],
     vendor: true,
 }
+
+// AOSP AIDL frontend with the existing Nothing pickup metadata/event behavior.
+// Kept opt-in until device event, wake-lock and suspend qualification completes.
+cc_binary {
+    name: "android.hardware.sensors-service.nothing-aidl",
+    vendor: true,
+    relative_install_path: "hw",
+    srcs: [
+        "aidl/service.cpp",
+        "aidl/HalProxyAidl.cpp",
+        "aidl/ConvertUtils.cpp",
+        "HalProxy.cpp",
+        "HalProxyCallback.cpp",
+    ],
+    local_include_dirs: ["aidl/include"],
+    init_rc: ["aidl/android.hardware.sensors-service.nothing-aidl.rc"],
+    vintf_fragments: ["aidl/android.hardware.sensors-nothing-aidl.xml"],
+    header_libs: [
+        "android.hardware.sensors@2.X-multihal.header",
+        "android.hardware.sensors@2.X-shared-utils",
+    ],
+    shared_libs: [
+        "android.hardware.sensors@1.0",
+        "android.hardware.sensors@2.0",
+        "android.hardware.sensors@2.0-ScopedWakelock",
+        "android.hardware.sensors@2.1",
+        "android.hardware.sensors-V3-ndk",
+        "libbase",
+        "libbinder_ndk",
+        "libcutils",
+        "libfmq",
+        "libhidlbase",
+        "liblog",
+        "libpower",
+        "libutils",
+    ],
+    static_libs: [
+        "android.hardware.sensors@1.0-convert",
+        "libaidlcommonsupport",
+    ],
+}

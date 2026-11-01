@@ -1,0 +1,58 @@
+{
+  "repository": "https://android.googlesource.com/platform/hardware/interfaces",
+  "revision": "928106fbfab17fbbcca4ae5b33ad726c230b32ae",
+  "files": {
+    "sensors/aidl/HalProxyAidl.cpp": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/HalProxyAidl.cpp",
+      "sha256": "11211bc07664ae697ba5f3f0ef1bca358221c45c3a47ed589413a23158da3fbb"
+    },
+    "sensors/aidl/ConvertUtils.cpp": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/ConvertUtils.cpp",
+      "sha256": "be89954304c77de57415e09704fa19471360af7329ff4d505cbfcd3c362cbfa8"
+    },
+    "sensors/aidl/include/ConvertUtils.h": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/include/ConvertUtils.h",
+      "sha256": "715d57dd6e5a13bc14d9de70a01e81132e20d76d65f0d1d7ed982bb503222226"
+    },
+    "sensors/aidl/include/EventMessageQueueWrapperAidl.h": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/include/EventMessageQueueWrapperAidl.h",
+      "sha256": "fd1fe3f45b7d2f8fdd8a669a487f274222fe59f16ef96f93760928fd5d865ad6"
+    },
+    "sensors/aidl/include/HalProxyAidl.h": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/include/HalProxyAidl.h",
+      "sha256": "a517b2e19f595ebc69b4066a490a775e6292fbd62dae4e8d6482123f59803361"
+    },
+    "sensors/aidl/include/ISensorsCallbackWrapperAidl.h": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/include/ISensorsCallbackWrapperAidl.h",
+      "sha256": "7d355fff94d64d387552e4110316174b320065e24354fdb4543942f81ee773cd"
+    },
+    "sensors/aidl/include/WakeLockMessageQueueWrapperAidl.h": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/default/multihal/include/WakeLockMessageQueueWrapperAidl.h",
+      "sha256": "b57703c34eeebf91f38d72c0c119c644c120277b4d07d027ffbce3a62d866757"
+    },
+    "sensors/aidl/service.cpp": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/multihal/service.cpp",
+      "sha256": "6800b4e58519c401af547e96536bf0e31895bd5acd3c837ec5ba1c252055ee95"
+    },
+    "sensors/aidl/android.hardware.sensors-service.nothing-aidl.rc": {
+      "status": "MODIFIED",
+      "original_path": "sensors/aidl/multihal/android.hardware.sensors-service-multihal.rc",
+      "adaptation": "Service/binary name only",
+      "sha256": "e9d78841a9f0825eff3b0a009a9d194500b0241d263d3a9b043871caf0f09f2f"
+    },
+    "sensors/aidl/android.hardware.sensors-nothing-aidl.xml": {
+      "status": "VERBATIM",
+      "original_path": "sensors/aidl/multihal/android.hardware.sensors-multihal.xml",
+      "sha256": "1fec5262cdfb7c4c66113b5b738618d7b7627380668ae90fea88127d86e92e5f"
+    }
+  },
+  "notes": "AOSP AIDL frontend; the existing Nothing HalProxy and HalProxyCallback preserve pickup behavior. No original authorship claimed."
+}
