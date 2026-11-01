@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+cc_binary {
+    name: "pong_camera_health",
+    system_ext_specific: true,
+    srcs: ["main.cpp"],
+    shared_libs: ["libbinder_ndk", "libcamera2ndk", "liblog"],
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    init_rc: ["pong_camera_health.rc"],
+}

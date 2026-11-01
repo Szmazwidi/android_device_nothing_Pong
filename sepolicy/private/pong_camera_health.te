@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+type pong_camera_health, domain, coredomain;
+type pong_camera_health_exec, exec_type, file_type, system_file_type;
+init_daemon_domain(pong_camera_health)
+binder_use(pong_camera_health)
+binder_call(pong_camera_health, cameraserver)
+allow pong_camera_health cameraserver_service:service_manager find;
+write_logd(pong_camera_health)
+system_internal_prop(pong_camera_health_prop)
+set_prop(pong_camera_health, pong_camera_health_prop)

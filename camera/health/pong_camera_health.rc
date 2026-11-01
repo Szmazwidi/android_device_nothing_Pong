@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: Apache-2.0
+service pong-camera-health /system_ext/bin/pong_camera_health --watch
+    class late_start
+    user cameraserver
+    group camera
+    disabled
+    oneshot
+    timeout_period 30
+
+on init
+    setprop sys.pong.camera.health_started 0
+    setprop sys.pong.camera.refresh_needed 0
+
+on property:sys.boot_completed=1 && property:ro.vendor.pong.kernel=6.18 && property:init.svc.vendor.pong618-camera=stopped && property:sys.pong.camera.health_started=0
+    setprop sys.pong.camera.health_started 1
+    start pong-camera-health
+
+on property:sys.pong.camera.refresh_needed=1 && property:init.svc.pong-camera-health=stopped && property:ro.vendor.pong.kernel=6.18
+    setprop sys.pong.camera.refresh_needed 2
+    restart vendor.camera-provider-2-7
+    write /dev/kmsg PONG_CAMERA_HEALTH_ONE_ENUMERATION_REFRESH

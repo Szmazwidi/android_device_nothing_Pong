@@ -4,6 +4,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+# Keep product selection consistent with the BoardConfig default.
+TARGET_PONG_KERNEL ?= 6.18
+
 # Add common definitions for Qualcomm
 $(call inherit-product, hardware/qcom-caf/common/common.mk)
 
@@ -550,4 +553,12 @@ $(call inherit-product, vendor/nothing/Pong/Pong-vendor.mk)
 ifeq ($(TARGET_USE_REMOVEPACKAGE),true)
 PRODUCT_PACKAGES += \
     RemovePackages
+endif
+
+# Experimental: disabled until its SELinux and cold-boot behavior is tested
+# on the intended ROM. It may restart the camera provider once after boot.
+ifeq ($(TARGET_PONG_KERNEL),6.18)
+ifeq ($(PONG_EXPERIMENTAL_CAMERA_HEALTH),true)
+PRODUCT_PACKAGES += pong_camera_health
+endif
 endif

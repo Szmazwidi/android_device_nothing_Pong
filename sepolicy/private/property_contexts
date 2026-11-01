@@ -12,3 +12,6 @@ fingerprint.disable.study                   u:object_r:system_fingerprint_prop:s
 persist.vendor.overlay.fp_model             u:object_r:system_fingerprint_prop:s0
 persist.vendor.overlay.fp_serial            u:object_r:system_fingerprint_prop:s0
 persist.vendor.overlay.fp_vendor            u:object_r:system_fingerprint_prop:s0
+
+sys.pong.camera.health_started    u:object_r:pong_camera_health_prop:s0 exact int
+sys.pong.camera.refresh_needed    u:object_r:pong_camera_health_prop:s0 exact int
