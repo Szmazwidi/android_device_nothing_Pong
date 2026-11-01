@@ -57,6 +57,15 @@ service vendor.pong618-sensors /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modul
     oneshot
     timeout_period 30
 
+# Finish SLPI boot before the sensor HAL first enumerates its cached list.
+service vendor.pong618-slpi-boot /vendor/bin/init.qti.write.sh /sys/kernel/boot_slpi/boot 1
+    user root
+    group root
+    seclabel u:r:vendor_qti_init_shell_bg:s0
+    disabled
+    oneshot
+    timeout_period 30
+
 service vendor.pong618-audiofoundation /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules q6_dlkm q6_notifier_dlkm gpr_dlkm audio_pkt_dlkm spf_core_dlkm audpkt_ion_dlkm adsp_loader_dlkm audio_prm_dlkm q6_pdr_dlkm snd_event_dlkm frpc_legacy_sdsp frpc_adsprpc cdsp_loader
     user root
     group root system
@@ -160,7 +169,9 @@ on property:init.svc.vendor.charger=running && property:ro.vendor.pong.kernel=6.
     write /sys/bus/platform/devices/1d84000.ufshc/power/control on
 
 on post-fs-data && property:ro.vendor.pong.kernel=6.18
-    start vendor.pong618-dsp
+    exec_start vendor.pong618-dsp
+    exec_start vendor.pong618-sensors
+    exec_start vendor.pong618-slpi-boot
     start vendor.pong618-battery
     # QCA6490: BT first, it owns BT_EN of the shared PMU
     exec_start vendor.pong618-bluetooth
@@ -174,13 +185,6 @@ on post-fs-data && property:ro.vendor.pong.kernel=6.18
 on property:init.svc.vendor.pong618-wireless=stopped && property:ro.vendor.pong.kernel=6.18
     write /sys/bus/platform/devices/b0000000.qcom,cnss-qca6490/recovery 1
     write /sys/bus/platform/devices/b0000000.qcom,cnss-qca6490/fs_ready 1
-
-# The stock init.vendor.sensors.rc writes boot_slpi before the PAS driver exists
-on property:init.svc.vendor.pong618-dsp=stopped && property:ro.vendor.pong.kernel=6.18
-    start vendor.pong618-sensors
-
-on property:init.svc.vendor.pong618-sensors=stopped && property:ro.vendor.pong.kernel=6.18
-    exec_background u:r:vendor_qti_init_shell_bg:s0 -- /vendor/bin/init.qti.write.sh /sys/kernel/boot_slpi/boot 1
 
 on load_persist_props_action && property:ro.vendor.pong.kernel=6.18
     # ALSA/DSP devices before zygote and the audio HALs
