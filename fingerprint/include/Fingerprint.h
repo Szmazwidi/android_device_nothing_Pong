@@ -27,6 +27,8 @@ public:
     Fingerprint();
     ~Fingerprint();
 
+    bool isHardwareReady() const { return mDevice != nullptr; }
+
     ndk::ScopedAStatus getSensorProps(std::vector<SensorProps>* _aidl_return) override;
     ndk::ScopedAStatus createSession(int32_t sensorId, int32_t userId,
                                      const std::shared_ptr<ISessionCallback>& cb,

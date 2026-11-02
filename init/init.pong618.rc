@@ -217,18 +217,19 @@ on load_persist_props_action && property:ro.vendor.pong.kernel=6.18
     chmod 0660 /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq
     chown system system /sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq
     chmod 0660 /sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq
+    # The kernel node and its permissions must exist before class late_start
+    # publishes the fingerprint HAL. Other providers are ready at this point.
+    exec_start vendor.pong618-fingerprint
+    chown system system /dev/goodix_fp
+    chmod 0600 /dev/goodix_fp
     restart vendor.vibrator
     # the Codec2 HAL enumerates /dev/video32/33 only when it starts
     exec_start vendor.pong618-video
     restart vendor-qti-media-c2-hal-1-0
 
 on property:sys.boot_completed=1 && property:ro.vendor.pong.kernel=6.18
-    # Same order as the working on-device test: load goodix_fp after boot
-    # completion, then restart the HAL so it opens the device from scratch.
-    exec_start vendor.pong618-fingerprint
-    chown system system /dev/goodix_fp
-    chmod 0600 /dev/goodix_fp
-    restart vendor.fingerprint-nothing
+    # Idempotent start: normal initialization already happened after driver load.
+    start vendor.fingerprint-nothing
     write /sys/bus/platform/devices/1d84000.ufshc/clkgate_enable 0
     write /sys/bus/platform/devices/1d84000.ufshc/clkscale_enable 0
     write /sys/bus/platform/devices/1d84000.ufshc/auto_hibern8 0

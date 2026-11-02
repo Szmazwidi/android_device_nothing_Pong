@@ -15,6 +15,13 @@ using ::aidl::android::hardware::biometrics::fingerprint::Fingerprint;
 int main() {
     ABinderProcess_setThreadPoolMaxThreadCount(0);
     std::shared_ptr<Fingerprint> fingerprint = ndk::SharedRefBase::make<Fingerprint>();
+    // Do not advertise a live Binder endpoint for unavailable hardware. Let
+    // init's bounded restart interval retry opening it instead of causing a
+    // tight framework createSession/DEAD_OBJECT retry loop.
+    if (!fingerprint->isHardwareReady()) {
+        LOG(ERROR) << "Fingerprint hardware is not ready; defer service registration";
+        return EXIT_FAILURE;
+    }
 
     const std::string instance = std::string() + Fingerprint::descriptor + "/default";
     binder_status_t status = AServiceManager_addService(fingerprint->asBinder().get(), instance.c_str());
