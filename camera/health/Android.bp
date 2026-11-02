@@ -3,7 +3,7 @@ cc_binary {
     name: "pong_camera_health",
     system_ext_specific: true,
     srcs: ["main.cpp"],
-    shared_libs: ["libbinder_ndk", "libcamera2ndk", "liblog"],
+    shared_libs: ["libbinder", "libcamera_client", "framework-permission-aidl-cpp", "liblog", "libutils"],
     cflags: ["-Wall", "-Wextra", "-Werror"],
     init_rc: ["pong_camera_health.rc"],
 }

@@ -555,12 +555,9 @@ PRODUCT_PACKAGES += \
     RemovePackages
 endif
 
-# Experimental: disabled until its SELinux and cold-boot behavior is tested
-# on the intended ROM. It may restart the camera provider once after boot.
+# Observe the real camera list and request at most one refresh on an empty list.
 ifeq ($(TARGET_PONG_KERNEL),6.18)
-ifeq ($(PONG_EXPERIMENTAL_CAMERA_HEALTH),true)
 PRODUCT_PACKAGES += pong_camera_health
-endif
 endif
 
 # Native CDSP FastRPC ABI; keep proprietary ADSP/SDSP clients unchanged.

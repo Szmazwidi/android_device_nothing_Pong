@@ -1,20 +1,25 @@
 # Nothing Phone (2) — Pong
 
 
-The `pong-6.18` branch adds the Linux 6.18.59 / CLS38 prebuilt path. Its complete
-ROM source-state recipe is in the companion
-[kernel-module repository](https://github.com/Szmazwidi/android_kernel_nothing_sm8475-modules-6.18/blob/pong-a17-6.18.59/docs/rom/README.md)
-(currently access-controlled). The source snapshot/build instructions below for
-September Android 17 are historical 5.10 recipes, not the current 6.18 lockfile.
-The 2026-11-01 complete ROM was built but has not been hardware-qualified; the
-CLS38 kernel/module set has its own separate device evidence. Its physical
-write guards are specific to the development phone, so this is not yet a
-universal flashable release for every Phone (2) SKU.
+The `pong-6.18` branch selects Linux 6.18.60 with the signed QRTR256 module
+bank. Its ROM source recipe is in the companion
+[kernel-module repository](https://github.com/Szmazwidi/android_kernel_nothing_sm8475-modules-6.18/blob/pong-a17-6.18.60/docs/rom/README.md)
+(currently access-controlled). Native Android 17 boots on the development handset;
+root, full RAM, Enforcing, forced signatures, front/main Camera2 frames,
+cellular transmission and Wi-Fi reconnect have separate runtime evidence.
+The native CDSP client and fingerprint startup changes also have Android build
+and device qualification. Overnight WLAN resume and long-duration stability
+remain open. A new complete OTA ZIP containing all these fixes has not yet been
+built or qualified. Device-specific write guards still prevent describing this
+as a universal flashable release for every Phone (2) SKU.
+
+The September source snapshot/build instructions below are historical 5.10
+recipes, not the current 6.18 lockfile.
 
 Device configuration for the **Nothing Phone (2)** (`Pong`) targeting **Android 17 / LineageOS 24.0**.
 
 > **Status:** community / development bring-up<br>
-> **Branch:** `lineage-24.0`<br>
+> **Branch:** `pong-6.18` (historical base: `lineage-24.0`)<br>
 > **Android:** 17<br>
 > **Device:** Nothing Phone (2)<br>
 > **Codename:** `Pong`
@@ -83,10 +88,14 @@ can recover without abandoning AIDL. This change does not erase fingerprint
 records, modify the Goodix TA, or change persist calibration. Host build validation
 and actual enrollment/authentication tests are separate requirements.
 
-Fingerprint initialization is deferred until `sys.boot_completed=1` on 6.18;
-the init action loads `goodix_fp`, applies the node ownership and restarts the
-AIDL service. Loading the module after the service has already failed to open
-hardware is insufficient unless the service retries or restarts.
+On 6.18, init now loads `goodix_fp` and applies its node ownership before
+`class late_start` publishes the AIDL service. The service checks that the
+legacy device opens before registering its Binder endpoint; otherwise init
+can restart it without publishing a permanently unusable endpoint. The later
+boot-complete action is an idempotent start, not a second HAL restart. One
+normal cold boot had zero HAL deaths and the user confirmed saved-finger
+unlock after the required initial PIN unlock. Enrollment, AOD and prolonged
+suspend remain separate qualification items.
 
 When the legacy device remains unavailable, `createSession` returns Binder
 `STATUS_DEAD_OBJECT`. The Android fingerprint client catches the resulting
@@ -96,6 +105,24 @@ by `09174d8b7b3fe400a59bfb34c5a2501e98e04686`. The upstream duplicate-session
 `CHECK` is retained to contain that contract violation to the HAL process.
 This is a startup and failure-containment fix; successful initialization does
 not establish reliable enrollment or unlocking on every boot.
+
+### Native CDSP and camera startup
+
+`TARGET_PONG_KERNEL=6.18` builds the native CDSP default listener from the
+unsquashed Qualcomm FastRPC v1.0.8 subtree. Separate library/executable names
+preserve the proprietary ADSP/SDSP clients and the original CDSP binary for
+other profiles. See [source and local adaptation scope](fastrpc/README.md).
+The source-built listener ran in `vendor_cdsprpcd` under Enforcing using the
+matching native endpoint and Qualcomm DMA heap, without the old ENODEV loop.
+This is listener qualification, not coverage of arbitrary DSP applications.
+
+The 6.18 camera observer only asks CameraService for the count of physical,
+backward-compatible cameras. It neither opens cameras nor records frames.
+A direct platform query avoids NDK listener callbacks and virtual-device
+service lookup permissions. Init limits an empty-list recovery request to
+one provider refresh per boot. No additional SELinux allow rule is required.
+This is recovery of startup enumeration; it does not replace camera-driver
+power-management fixes or qualify every camera mode.
 
 ### Sensors AIDL candidate
 
