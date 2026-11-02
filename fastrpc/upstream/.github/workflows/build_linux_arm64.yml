@@ -1,0 +1,105 @@
+name: CI - Linux GNU Compilation / ARM64
+
+on:
+  push:
+    branches:
+    - 'main'
+    - 'development'
+  pull_request:
+    branches:
+    - 'main'
+    - 'development'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v6
+
+    - name: Configure APT for amd64 + arm64 (ports) and update
+      shell: bash
+      run: |
+        set -euxo pipefail
+
+        # Detect Ubuntu codename
+        CODENAME="$(. /etc/os-release; echo "${VERSION_CODENAME}")"
+        : "${CODENAME:?Failed to read VERSION_CODENAME from /etc/os-release}"
+        echo "Detected Ubuntu codename: ${CODENAME}"
+
+        # 1) Enable arm64 multiarch
+        sudo dpkg --add-architecture arm64
+
+        # 2) Overwrite main sources to be amd64-only (archive + security)
+        sudo tee /etc/apt/sources.list > /dev/null <<EOF
+        deb [arch=amd64] http://archive.ubuntu.com/ubuntu ${CODENAME} main restricted universe multiverse
+        deb [arch=amd64] http://archive.ubuntu.com/ubuntu ${CODENAME}-updates main restricted universe multiverse
+        deb [arch=amd64] http://archive.ubuntu.com/ubuntu ${CODENAME}-backports main restricted universe multiverse
+        deb [arch=amd64] http://security.ubuntu.com/ubuntu ${CODENAME}-security main restricted universe multiverse
+        EOF
+
+        # 3) Add Ubuntu Ports for arm64 only
+        sudo tee /etc/apt/sources.list.d/arm64-ports.list > /dev/null <<EOF
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${CODENAME} main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${CODENAME}-updates main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${CODENAME}-backports main restricted universe multiverse
+        deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports ${CODENAME}-security main restricted universe multiverse
+        EOF
+
+        # 4) Remove deb822 sources that may still request arm64 from security.ubuntu.com
+        sudo rm -f /etc/apt/sources.list.d/ubuntu.sources || true
+
+        # 5) Clean and update indices (amd64 from archive/security; arm64 from ports)
+        sudo apt-get clean
+        sudo apt-get update
+
+    - name: Install auto tools and dependencies
+      run: |
+        set -euxo pipefail
+        sudo apt-get install -y --no-install-recommends \
+          automake autoconf libtool pkg-config \
+          gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu\
+          libyaml-dev \
+          libyaml-0-2:arm64 libyaml-dev:arm64 \
+          libbsd-dev:arm64
+
+    - name: Sanity check libyaml (headers + ARM64 pc)
+      run: |
+        set -euxo pipefail
+        ls -l /usr/include/yaml.h
+        ls -l /usr/lib/aarch64-linux-gnu/pkgconfig/yaml-0.1.pc
+        PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig pkg-config --cflags --libs yaml-0.1
+
+    - name: Set Up Build Environment and compile code for LE platform
+      run: |
+        # Set Up Build Environment
+        export CC=aarch64-linux-gnu-gcc
+        export CXX=aarch64-linux-gnu-g++
+        export AS=aarch64-linux-gnu-as
+        export LD=aarch64-linux-gnu-ld
+        export RANLIB=aarch64-linux-gnu-ranlib
+        export STRIP=aarch64-linux-gnu-strip
+        export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+
+        # Compile the source code
+        ./gitcompile --host=aarch64-linux-gnu
+
+    - name: Verify the compiled binaries
+      run: |
+        echo "Verify the compiled binaries"
+        Files=("src/.libs/libadsp_default_listener.so
+          src/.libs/libadsprpc.so
+          src/.libs/libcdsp_default_listener.so
+          src/.libs/libcdsprpc.so
+          src/.libs/libsdsp_default_listener.so
+          src/.libs/libsdsprpc.so
+          src/adsprpcd
+          src/cdsprpcd
+          src/sdsprpcd")
+        for File in $Files
+        do 
+         if [ -f $File ] ; then echo $File " - Exists" ; else echo $File " - Not Exists" && exit -1 ; fi
+        done

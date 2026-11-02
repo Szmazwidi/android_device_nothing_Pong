@@ -1,0 +1,35 @@
+name: CI - Linux GNU Compilation
+
+on:
+  push:
+    branches:
+    - 'main'
+    - 'development'
+  pull_request:
+    branches:
+    - 'main'
+    - 'development'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v6
+
+    - name: Install Autotools + dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          autoconf automake libtool pkg-config \
+          libyaml-dev libbsd-dev \
+          tar gzip
+
+    - name: Compile code for LE platform
+      run: |
+        GITCOMPILE_NO_MAKE=true ./gitcompile --enable-stricter
+        make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-systemdsystemunitdir='lib/systemd/system' --with-udevrulesdir='lib/udev/rules.d' --with-sysusersdir='lib/sysusers.d' --enable-stricter"
