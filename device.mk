@@ -562,3 +562,8 @@ ifeq ($(PONG_EXPERIMENTAL_CAMERA_HEALTH),true)
 PRODUCT_PACKAGES += pong_camera_health
 endif
 endif
+
+# Native CDSP FastRPC ABI; keep proprietary ADSP/SDSP clients unchanged.
+ifeq ($(TARGET_PONG_KERNEL),6.18)
+PRODUCT_PACKAGES += pong_cdsprpcd
+endif

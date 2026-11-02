@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Installed only by the native CDSP package selected for TARGET_PONG_KERNEL=6.18.
+# Retain the original init service identity, credentials and disable property.
+service vendor.cdsprpcd /vendor/bin/pong-cdsprpcd
+    override
+    class main
+    user system
+    group system
+    disabled

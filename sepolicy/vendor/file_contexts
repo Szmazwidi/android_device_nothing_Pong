@@ -61,3 +61,11 @@
 
 # Optional AIDL sensors frontend; same existing sensor HAL domain.
 /(vendor|system/vendor)/bin/hw/android\.hardware\.sensors-service\.nothing-aidl    u:object_r:hal_sensors_default_exec:s0
+
+# Native CDSP endpoint: use the existing DSP device permissions.
+/dev/fastrpc-cdsp                         u:object_r:vendor_qdsp_device:s0
+/dev/fastrpc-cdsp-secure                  u:object_r:vendor_xdsp_device:s0
+/vendor/lib64/libpong_cdsprpc_v1\.so      u:object_r:same_process_hal_file:s0
+/vendor/lib64/libpong_cdsp_listener_v1\.so u:object_r:same_process_hal_file:s0
+
+/vendor/bin/pong-cdsprpcd u:object_r:vendor_cdsprpcd_exec:s0

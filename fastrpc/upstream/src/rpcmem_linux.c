@@ -68,7 +68,9 @@ struct dma_heap_allocation_data {
 #define DMA_HEAP_IOC_MAGIC 'H'
 #define DMA_HEAP_IOCTL_ALLOC                                                   \
   _IOWR(DMA_HEAP_IOC_MAGIC, 0x0, struct dma_heap_allocation_data)
+#ifndef DMA_HEAP_NAME
 #define DMA_HEAP_NAME "/dev/dma_heap/system"
+#endif
 static int dmafd = -1;
 static int rpcfd = -1;
 static QList rpclst;

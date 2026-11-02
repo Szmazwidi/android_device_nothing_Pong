@@ -1,0 +1,117 @@
+// Native CDSP client: Qualcomm FastRPC v1.0.8, BSD-3-Clause.
+// Imported with its upstream Git history; see README.md for local scope.
+
+package {
+    default_applicable_licenses: ["pong_fastrpc_license"],
+}
+
+license {
+    name: "pong_fastrpc_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-BSD-3-Clause"],
+    license_text: ["upstream/LICENSE.txt"],
+}
+
+cc_defaults {
+    name: "pong_fastrpc_native_defaults",
+    vendor: true,
+    compile_multilib: "64",
+    stl: "none",
+    local_include_dirs: [
+        "upstream/inc",
+        "upstream/public_headers",
+    ],
+    cflags: [
+        "-fno-short-enums",
+        "-DARM_ARCH_7A",
+        "-DLE_ENABLE",
+        "-DENABLE_UPSTREAM_DRIVER_INTERFACE",
+        "-DUSE_SYSLOG",
+        "-DDEFAULT_DOMAIN_ID=3",
+        "-DDMA_HEAP_NAME=\"/dev/dma_heap/qcom,system\"",
+        "-DCONFIG_BASE_DIR=\"/vendor/etc/fastrpc/\"",
+        "-DMACHINE_NAME_PATH=\"/sys/firmware/devicetree/base/model\"",
+        "-DDEFAULT_DSP_SEARCH_PATHS=\";/vendor/lib/rfsa/adsp;/vendor/dsp/cdsp;/vendor/dsp;\"",
+    ],
+    shared_libs: [
+        "libdl",
+        "liblog",
+        "libm",
+    ],
+}
+
+cc_library_shared {
+    name: "libpong_cdsprpc_v1",
+    defaults: ["pong_fastrpc_native_defaults"],
+    srcs: [
+        "upstream/src/fastrpc_apps_user.c",
+        "upstream/src/fastrpc_perf.c",
+        "upstream/src/fastrpc_pm.c",
+        "upstream/src/fastrpc_config.c",
+        "upstream/src/fastrpc_mem.c",
+        "upstream/src/fastrpc_notif.c",
+        "upstream/src/fastrpc_ioctl.c",
+        "upstream/src/fastrpc_log.c",
+        "upstream/src/fastrpc_procbuf.c",
+        "upstream/src/fastrpc_cap.c",
+        "upstream/src/log_config.c",
+        "upstream/src/dspsignal.c",
+        "upstream/src/dspqueue/dspqueue_cpu.c",
+        "upstream/src/dspqueue/dspqueue_rpc_stub.c",
+        "upstream/src/listener_android.c",
+        "upstream/src/apps_std_imp.c",
+        "upstream/src/apps_mem_imp.c",
+        "upstream/src/apps_mem_skel.c",
+        "upstream/src/rpcmem_linux.c",
+        "upstream/src/adspmsgd.c",
+        "upstream/src/adspmsgd_printf.c",
+        "upstream/src/std_path.c",
+        "upstream/src/std_dtoa.c",
+        "upstream/src/BufBound.c",
+        "upstream/src/platform_libs.c",
+        "upstream/src/pl_list.c",
+        "upstream/src/gpls.c",
+        "upstream/src/remotectl_stub.c",
+        "upstream/src/remotectl1_stub.c",
+        "upstream/src/adspmsgd_apps_skel.c",
+        "upstream/src/adspmsgd_adsp_stub.c",
+        "upstream/src/adspmsgd_adsp1_stub.c",
+        "upstream/src/apps_remotectl_skel.c",
+        "upstream/src/adsp_current_process_stub.c",
+        "upstream/src/adsp_current_process1_stub.c",
+        "upstream/src/adsp_listener_stub.c",
+        "upstream/src/adsp_listener1_stub.c",
+        "upstream/src/apps_std_skel.c",
+        "upstream/src/adsp_perf_stub.c",
+        "upstream/src/adsp_perf1_stub.c",
+        "upstream/src/mod_table.c",
+        "upstream/src/fastrpc_context.c",
+    ],
+}
+
+cc_library_shared {
+    name: "libpong_cdsp_listener_v1",
+    defaults: ["pong_fastrpc_native_defaults"],
+    srcs: [
+        "upstream/src/adsp_default_listener.c",
+        "upstream/src/adsp_default_listener_stub.c",
+        "upstream/src/adsp_default_listener1_stub.c",
+    ],
+    shared_libs: [
+        "libpong_cdsprpc_v1",
+    ],
+}
+
+cc_binary {
+    name: "pong_cdsprpcd",
+    stem: "pong-cdsprpcd",
+    init_rc: ["zz.pong618-cdsprpc.rc"],
+    defaults: ["pong_fastrpc_native_defaults"],
+    srcs: ["upstream/src/dsprpcd.c"],
+    required: ["libpong_cdsp_listener_v1"],
+    cflags: [
+        "-DUSE_CDSP",
+        "-DCDSP_LISTENER_VERSIONED=\"libpong_cdsp_listener_v1.so\"",
+        "-DCDSP_LISTENER_UNVERSIONED=\"libpong_cdsp_listener_v1.so\"",
+    ],
+}
