@@ -9,3 +9,6 @@
 
 # NFC
 /dev/pn553    0660    nfc               nfc
+
+# Fingerprint: assign the owner when the node is created, including late modules.
+/dev/goodix_fp             0600   system       system
