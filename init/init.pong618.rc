@@ -114,7 +114,9 @@ service vendor.pong618-memory /vendor/bin/modprobe -a -d /vendor_dlkm/lib/module
     oneshot
     timeout_period 10
 
-service vendor.pong618-peripherals /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules haptic leds-aw20036 nfc-qti-i2c
+# CLG25: Nothing misc drivers (/proc/hwid, secure_state, SIM slot, skin NTC zones, oem_sec_boot, bootloader log,
+# task meminfo), the stock PowerStats nodes and rq-stats load here, after boot, like on the development phone.
+service vendor.pong618-peripherals /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules haptic leds-aw20036 nfc-qti-i2c rq_stats soc_sleep_stats simulated_ntc hardware_id secure_state slot_status nothing_bootloader_log nothing_secure_element nothing_task_meminfo
     user root
     group root system
     seclabel u:r:vendor_modprobe:s0
@@ -264,8 +266,8 @@ on property:init.svc.vendor.pong618-camera=stopped && property:ro.vendor.pong.ke
     write /sys/devices/system/cpu/cpu7/power/pm_qos_resume_latency_us 3000
     write /sys/devices/platform/soc/1d84000.ufshc/pm_qos_enable 0
 
-# Not used with 6.18: the kernel has the QRTR name service, there is no rq-stats for
-# msm_irqbalance, and without the USB GSI driver there is no /dev/rmnet_ctrl for dataqti
+# Not used with 6.18: the kernel has the QRTR name service, msm_irqbalance is untested on 6.18
+# (rq-stats exists since CLG25, but the 5.10 binary also uses obsolete IRQ inputs), and without the USB GSI driver there is no /dev/rmnet_ctrl for dataqti
 # (init.class_main.sh checks that one).
 on property:init.svc.vendor.qrtr-ns=running && property:ro.vendor.pong.kernel=6.18
     stop vendor.qrtr-ns
