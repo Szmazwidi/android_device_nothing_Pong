@@ -102,3 +102,11 @@ sh_binary {
     src: "init.qcom.sh",
     vendor: true,
 }
+
+// Preserve the user's USB ADB opt-in with the AIDL/configfs=2 gadget HAL.
+prebuilt_etc {
+    name: "init.pong.usb-adb.rc",
+    src: "init.pong.usb-adb.rc",
+    sub_dir: "init",
+    vendor: true,
+}

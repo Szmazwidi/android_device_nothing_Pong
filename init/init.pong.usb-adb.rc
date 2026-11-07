@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# The Qualcomm gadget HAL uses configfs=2, while the AOSP legacy init rules
+# start adbd only for configfs=0/1. On a boot with ADB already enabled,
+# AdbService seeds mIsAdbUsbEnabled and can skip the normal start transition.
+# Make the existing USB opt-in idempotent; never enable debugging or change auth.
+
+on property:sys.boot_completed=1 && property:sys.usb.configfs=2 && property:sys.usb.config=adb
+    start adbd
+
+on property:sys.boot_completed=1 && property:sys.usb.configfs=2 && property:sys.usb.config=mtp,adb
+    start adbd
+
+on property:sys.boot_completed=1 && property:sys.usb.configfs=2 && property:sys.usb.config=ptp,adb
+    start adbd
+
+on property:sys.boot_completed=1 && property:sys.usb.configfs=2 && property:sys.usb.config=rndis,adb
+    start adbd
+
+on property:sys.boot_completed=1 && property:sys.usb.configfs=2 && property:sys.usb.config=ncm,adb
+    start adbd
