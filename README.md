@@ -196,15 +196,12 @@ The `lineage-24.0` branch also contains Android 17 bring-up adjustments includin
 - updated UDFPS enrollment progress geometry;
 - Android 17 WFD blob compatibility fixups.
 
-## Data-preserving development boots
+## Clean installs need `formattable`
 
-On `pong-6.18`, the shared fstab intentionally removes automatic formatting
-from `/data` and `/metadata`. A failed mount must be diagnosed instead of
-automatically destroying restored files or encryption keys. First-stage,
-vendor init and recovery all consume this source fstab. This does not prove
-encryption compatibility, replace a backup, or prohibit an explicitly requested
-recovery factory reset. A blank-device install may need an explicit recovery
-format; an existing-data update must not use that as a fallback.
+`/data` and `/metadata` carry `formattable`, as in the stock fstab. On a clean install vold creates the
+metadata encryption key and formats `/data` through the encrypted mapper; without the flag the first
+boot ends in `init_user0_failed`. A failed mount of existing data can therefore format it, exactly as on
+stock firmware: keep a backup before updates.
 
 ## Building
 
