@@ -8,6 +8,10 @@ providers through native init services.
 
 ## Update and signing
 
+Keep the bootloader unlocked with this custom-key candidate. Relocking has not
+been qualified. Android properties can report spoofed green/locked values;
+inspect the bootloader itself when qualifying its actual state.
+
 Use a matching recovery, an unlocked bootloader and the firmware version
 actually qualified for the target hardware. The payload contains recovery and
 vbmeta partitions as well as the Android images. A component-only kernel test
