@@ -5,6 +5,8 @@ Linux 6.18.60, with 293 signed modules and 100 first-stage modules. Select the
 matching community prebuilt and kernel/module manifest as one coherent set.
 The public source recipe and distribution limits are recorded in the companion
 module repository's Community CLG43 guide and in [release qualification](RELEASE-CLG43.md).
+The matching complete ROM snapshot and build commands are in
+[the community build recipe](manifests/community-clg43/README.md).
 
 The community kernel uses forced native module signature verification and
 omits the handset-specific LAB write, mount and exact-payload restrictions.
