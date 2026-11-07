@@ -24,5 +24,18 @@
         "after": "f2ff9e70d8b5a16fe6042fbd20ad2172599e701a87e31e523abeb2ac640f9ca5"
       }
     ]
+  },
+  {
+    "project": "hardware/qcom-caf/bootctrl",
+    "revision": "25092672e644459db328b43fd1c7c57cbff65c91",
+    "patch": "bootctrl-no-scsi-generic.patch",
+    "sha256": "6172635a4824d312ec2034efcfac1a861632f72b3383ad207d634decfad083c6",
+    "files": [
+      {
+        "path": "gpt-utils/gpt-utils.cpp",
+        "before": "0d363f87139b28d34ab518e2fa618110aad6e53a12cceb905f80da8f2a39569e",
+        "after": "cdcecf8e80719e7000f73a283f245e6b967e1f5fc5ceb6c597dd318026009c91"
+      }
+    ]
   }
 ]
