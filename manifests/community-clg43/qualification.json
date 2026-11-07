@@ -14,7 +14,7 @@
     "kernel": "58b289d57b3d1f4b6fa6bb51db13920f459ae153",
     "modules_code": "bad6c14720da8364280add901bb549b78f30b5b8",
     "device_functional": "f4bf0e70c0c624a9e3d212611e79a6e6945f30b8",
-    "prebuilt": "9cd5ced54f8fe0574ba4aee767d0bd918ccf87b7"
+    "prebuilt": "9d1838b9ec30d924bef62c2f989f1e8faf74b16e"
   },
   "host": {
     "fresh_kernel_and_modules": "PASS",
@@ -59,25 +59,33 @@
     }
   },
   "signing": {
-    "OTA_SHA256": "191ef92ed4810b7e7efe3b9bfbd434fc0d699acf7fe593b973eadcf1b982ec85",
+    "OTA_SHA256": "bb39f43d2ad00cb1f10b776651b5c141bff8b93be2f975fee7ad768f480f6628",
     "OTA_certificate_SHA256": "2a3c6b35e4b6cb71b996fa394a99d34de79b89a138648b1f60b09c27ac8156f9",
     "whole_ZIP_and_payload_signatures": "PASS_AOSP_verifier",
     "AVB_and_293_modules": "PASS_independent_reconstruction",
     "AVB_flags": 0,
     "signed_release_candidate_flashes": 0,
-    "installed_Android_APK_keys": "unchanged developer identities"
+    "installed_Android_APK_keys": "unchanged developer identities",
+    "rebuilt": "2026-11-07: same sources plus the dtbo with the absent PMR735B disabled"
   },
   "open_gates": [
     "Data-preserving application/shared-UID/APEX and OTA trust migration from developer keys",
     "Exact release recovery and complete 13-partition OTA installation on hardware",
     "Fresh installation with release keys",
-    "Untethered overnight suspend, battery and repeat-wake qualification",
-    "Physical NFC tag, BT audio/HFP, GNSS fix, voice calls/SMS, all camera modes and USB OTG",
+    "Untethered overnight battery and repeat-wake qualification (10 min untethered suspend passed)",
+    "Voice calls/SMS on this build, all camera modes and USB OTG (NFC card, BT audio and GNSS passed)",
     "Other RAM/UFS hardware variants"
   ],
   "observed_followups": [
     "Single early SPMI warning remains",
     "VPP service denies read of the ADSP DMA heap; inspect separately, no blanket allow or permissive change",
     "BatteryGuru charging wakelock observed; short tethered control still produced zero CXSD/AOSD/DDR counts. Suspend remains unqualified."
-  ]
+  ],
+  "hardware_results": {
+    "untethered_suspend_10min": "PASS: CXSD 1143 entries, 42 suspends, 0 kernel errors (stage 1459 images)",
+    "BT_audio": "PASS (owner: headphones, watch)",
+    "NFC_card_read": "PASS (owner)",
+    "GNSS": "PASS (owner)",
+    "CLG50_images_on_phone": "PASS: boot, Wi-Fi, 5 cameras, unlock, data intact; SPMI PMR735B WARN gone"
+  }
 }
