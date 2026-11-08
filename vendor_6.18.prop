@@ -3,3 +3,6 @@ ro.vendor.pong.kernel=6.18
 
 # The tested 6.18 bring-up runs the audio HAL without the CMA dma-buf heap
 vendor.audio.feature.dmabuf.cma.memory.enable=false
+
+# CLG72: retain UFS throughput without a kernel-side scheduler lock.
+ro.vendor.pong.ufs_scheduler=mq-deadline

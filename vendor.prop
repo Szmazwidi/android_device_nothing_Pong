@@ -238,3 +238,6 @@ wifi.aware.interface=wifi-aware0
 
 # Zygote
 zygote.critical_window.minute=10
+
+# Default for the5.10 profile; vendor_6.18.prop overrides this optional assignment.
+ro.vendor.pong.ufs_scheduler?=bfq
