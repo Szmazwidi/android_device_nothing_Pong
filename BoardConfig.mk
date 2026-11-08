@@ -123,6 +123,9 @@ BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(strip $(shell cat $(KERNE
 BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
 BOARD_DO_NOT_STRIP_VENDOR_RAMDISK_MODULES := true
 BOARD_DO_NOT_STRIP_RECOVERY_MODULES := true
+# CLG63-CLG72 (benchmarks vs 5.10): menu picks the DT rail-pc state (exit 750/1550 us) for short
+# idles, teo does not; PELT halflife 16 ms ramps schedutil closer to WALT on 5.10.
+BOARD_KERNEL_CMDLINE += cpuidle.governor=teo sysctl.kernel.sched_pelt_multiplier=2
 else
 # Kernel modules
 BOARD_VENDOR_KERNEL_MODULES_BLOCKLIST_FILE := $(DEVICE_PATH)/modules.blocklist
