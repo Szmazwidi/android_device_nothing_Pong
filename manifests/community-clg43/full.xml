@@ -1289,12 +1289,12 @@
   </project>
   <contactinfo bugurl="go/repo-bug" />
   <remote name="pong-release" fetch="https://github.com/" />
-  <project path="device/nothing/Pong" name="Szmazwidi/android_device_nothing_Pong" remote="pong-release" revision="f4bf0e70c0c624a9e3d212611e79a6e6945f30b8" upstream="pong-6.18-community-clg43" />
-  <project path="device/nothing/Pong-kernel" name="Szmazwidi/android_device_nothing_Pong-kernel" remote="pong-release" revision="9d1838b9ec30d924bef62c2f989f1e8faf74b16e" upstream="pong-community-clg43" />
+  <project path="device/nothing/Pong" name="Szmazwidi/android_device_nothing_Pong" remote="pong-release" revision="71e32ca4a085ebd739d48a62dd24b8361ebf45c7" upstream="pong-6.18-community-clg74" />
+  <project path="device/nothing/Pong-kernel" name="Szmazwidi/android_device_nothing_Pong-kernel" remote="pong-release" revision="c263ba37903f04698f1a26214fc420cf3daea1f7" upstream="pong-kernel-clg74" />
   <project path="hardware/dolby" name="Pong-Development/hardware_dolby" remote="pong-release" revision="0bae4ceb87b2d3ff0bf66c592b964c0380d1c99a" />
   <project path="kernel/nothing/sm8475" name="Szmazwidi/android_kernel_nothing_sm8475" remote="pong-release" revision="673fc11462a0cdb264230c136a964583cceec798" sync-s="true" />
   <project path="kernel/nothing/sm8475-devicetrees" name="Nothing-phone-2-Development/android_kernel_nothing_sm8475-devicetrees" remote="pong-release" revision="4b06eb8d7c0bbc548a5f3336ac201e4fb29ccaf8" />
   <project path="packages/apps/GlyphAdapter" name="Pong-Development/packages_apps_GlyphAdapter" remote="pong-release" revision="9f43981b04189d8ec2026673153fb807b4b74b7c" />
   <project path="packages/apps/ParanoidGlyphPhone2" name="Pong-Development/packages_apps_ParanoidGlyph" remote="pong-release" revision="81443b0faebc7290c240a6f1b00ddc0c3fc39965" />
-  <project path="vendor/nothing/Pong" name="Szmazwidi/android_vendor_nothing_Pong" remote="pong-release" revision="fcb71610a7f6506f5e07761d91044125cf1aaec5" />
+  <project path="vendor/nothing/Pong" name="Szmazwidi/android_vendor_nothing_Pong" remote="pong-release" revision="a3ad1dc26bdba7438b7251678e4fd2e26214b50c" />
 </manifest>
