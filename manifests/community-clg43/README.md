@@ -110,3 +110,6 @@ hard-IRQ completions), mq-deadline for UFS from the vendor rc property (BFQ halv
 teo cpuidle governor and PELT multiplier 2 on the kernel command line, one CPU cluster in the base DTB,
 SLIMbus NGD init order (Codex 1480). Qualified on the LAB profile (full benchmark block vs 5.10: 42 better,
 15 worse; overnight standby 7.4 mA); the signed community build itself still needs its own install test.
+The snapshot was refreshed to DerpFest/LineageOS as synced on 9 Nov 2026 (53 projects, 208 commits; 12 projects
+moved from AOSP to LineageOS forks; list in `derpfest-sync-20261109.txt`). The LAB benchmark qualification above
+ran on the pre-sync framework; the kernel, modules, DTB and command line are unchanged by the sync.
