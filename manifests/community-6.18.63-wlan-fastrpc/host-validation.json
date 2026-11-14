@@ -1,0 +1,34 @@
+{
+  "status": "HOST_BUILD_SIGNATURES_AND_VM_PASS",
+  "kernel_source": "7c870eb605a7e2b767b3e52f86ea1e0d7bc897f9",
+  "module_source": "cf41edd10596d97db2d073cf3a7b02c381aeaa68",
+  "image_sha256": "e4c13ffa8304ed685739a15c8ee01329df59ba84f9513d46403bb65999731949",
+  "verified_manifest_pins": 59,
+  "source_preflight_checks": 33,
+  "module_counts": {
+    "gki": 84,
+    "vendor": 209,
+    "total": 293,
+    "first_stage": 100
+  },
+  "module_abi_verified": true,
+  "module_signatures_verified": true,
+  "qemu": {
+    "status": "PASS",
+    "expected": {
+      "unsigned.ko": -129,
+      "wrong-key.ko": -129,
+      "corrupt-signature.ko": -129,
+      "changed-signed.ko": 0,
+      "good.ko": 0
+    },
+    "observed": {
+      "unsigned.ko": -129,
+      "wrong-key.ko": -129,
+      "corrupt-signature.ko": -129,
+      "changed-signed.ko": 0,
+      "good.ko": 0
+    }
+  },
+  "combined_hardware_tested": false
+}

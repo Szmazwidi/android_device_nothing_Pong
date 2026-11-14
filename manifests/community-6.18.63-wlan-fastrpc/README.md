@@ -42,13 +42,13 @@ The patch retains its original commit metadata and revert reference.
 
 ## Qualification
 
-- The exact source pins and the 293-module selection passed the source
-  preflight. The prior IR/VIDC cohort passed a full Kleaf build, ABI check,
-  module signature check and QEMU smoke test.
+- The exact combined kernel and module sources passed the pinned Kleaf
+  build, ABI and signature checks for all 293 modules, and the QEMU module
+  admission test. [Host validation](host-validation.json).
 - The WLAN and FastRPC changes were built separately with Kleaf. Each was
   tested on the signed 6.18.63 base. FastRPC registered ADSP and SLPI and opened
   both RPMsg channels. The WLAN test booted Android with enforcing
   SELinux/verity and rejoined a saved network. Its untethered idle drain and
   recovery after a WLAN HAL failure still need measurement.
-- The exact combined source cohort and its resulting full OTA still need
-  end-to-end qualification. This is a source candidate for development.
+- A full OTA using this exact combined build still needs packaging and
+  on-device qualification. This is a source candidate for development.
