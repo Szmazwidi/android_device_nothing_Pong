@@ -59,7 +59,6 @@ blob_fixups: blob_fixups_user_type = {
         .add_needed('libgui_shim.so'),
     'system_ext/lib64/libwfdservice.so': blob_fixup()
         .add_needed('libaudiobase.so')
-        .add_needed('android.hidl.base@1.0.so')
         .replace_needed('android.media.audio.common.types-V4-cpp.so', 'android.media.audio.common.types-V5-cpp.so')
         .replace_needed('vendor.qti.hardware.wifidisplaysession_aidl-V1-ndk.so', 'vendor.qti.hardware.wifidisplaysession_aidl-V2-ndk.so'),
     'vendor/bin/qcc-trd': blob_fixup()
