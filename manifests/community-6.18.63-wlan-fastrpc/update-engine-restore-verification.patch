@@ -1,0 +1,50 @@
+From f28ea091496d56edec04dd5dbf89094d59b8b118 Mon Sep 17 00:00:00 2001
+From: OpenAI Codex <codex@openai.com>
+Date: Thu, 12 Nov 2026 19:51:40 +0100
+Subject: [PATCH] Revert "update_engine: Always disable signature and downgrade
+ checks"
+
+This reverts commit 746352b263f44ff650644d4a9f000142b8f9cbf6.
+---
+ aosp/hardware_android.cc             | 3 ++-
+ payload_consumer/payload_verifier.cc | 6 ++----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/aosp/hardware_android.cc b/aosp/hardware_android.cc
+index 9bef40dd..edf5c74e 100644
+--- a/aosp/hardware_android.cc
++++ b/aosp/hardware_android.cc
+@@ -265,7 +265,8 @@ int64_t HardwareAndroid::GetBuildTimestamp() const {
+ // Returns true if the device runs an userdebug build, and explicitly allows OTA
+ // downgrade.
+ bool HardwareAndroid::AllowDowngrade() const {
+-  return true;
++  return GetBoolProperty("ro.ota.allow_downgrade", false) &&
++         GetBoolProperty("ro.debuggable", false);
+ }
+
+ bool HardwareAndroid::GetFirstActiveOmahaPingSent() const {
+diff --git a/payload_consumer/payload_verifier.cc b/payload_consumer/payload_verifier.cc
+index 9c135f45..83ef8c9e 100644
+--- a/payload_consumer/payload_verifier.cc
++++ b/payload_consumer/payload_verifier.cc
+@@ -95,9 +95,7 @@ std::unique_ptr<PayloadVerifier> PayloadVerifier::CreateInstanceFromZipPath(
+
+ bool PayloadVerifier::VerifySignature(
+     const string& signature_proto, const brillo::Blob& sha256_hash_data) const {
+-  LOG(INFO) << "Payload signature verification skipped";
+-  return true;
+-  /*TEST_AND_RETURN_FALSE(!public_keys_.empty());
++  TEST_AND_RETURN_FALSE(!public_keys_.empty());
+
+   Signatures signatures;
+   LOG(INFO) << "signature blob size = " << signature_proto.size();
+@@ -142,7 +140,7 @@ bool PayloadVerifier::VerifySignature(
+   for (const auto& sig_hash_data : tested_hashes) {
+     utils::HexDumpVector(sig_hash_data);
+   }
+-  return false;*/
++  return false;
+ }
+
+ bool PayloadVerifier::VerifyRawSignature(
