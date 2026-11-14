@@ -102,7 +102,7 @@ for an untethered standby test or report it as a power-management pass.
 
 ## CLG74 candidate (9 Nov 2026)
 
-Pins: device `pong-6.18-community-clg74`, Pong-kernel `pong-kernel-clg74`, vendor `a3ad1dc`.
+Pins: device `pong-6.18-community-clg74`, Pong-kernel `pong-6.18`, vendor `a3ad1dc`.
 Prebuilt modules were source-built from the modules repository; the shipped changes are on branch
 `pong-a17-6.18.60-community-clg74` (head `935e1cf5`, identical ufs-reboot39 and btfm617 sources) against the unchanged community kernel `c6a70ae3`; compared with the 1459 bank only
 `ufs-qcom.ko` and `slim-qcom-ngd-ctrl.ko` differ. Changes: UFS CPU hints (QoS, boost, IRQ, rq_affinity 0,
