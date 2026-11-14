@@ -1,4 +1,4 @@
-package org.lunaris.device.DeviceExtras.ui
+package org.neoteric.device.DeviceExtras.ui
 
 import android.app.Application
 import android.content.ComponentName
@@ -25,13 +25,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import org.lunaris.device.DeviceExtras.ChargingLimiter
-import org.lunaris.device.DeviceExtras.DeviceExtras
-import org.lunaris.device.DeviceExtras.OTGModeSwitch
-import org.lunaris.device.DeviceExtras.OTGTileService
-import org.lunaris.device.DeviceExtras.R
-import org.lunaris.device.DeviceExtras.ThermalLimiter
-import org.lunaris.device.DeviceExtras.ThermalLimiterTileService
+import org.neoteric.device.DeviceExtras.ChargingLimiter
+import org.neoteric.device.DeviceExtras.DeviceExtras
+import org.neoteric.device.DeviceExtras.OTGModeSwitch
+import org.neoteric.device.DeviceExtras.OTGTileService
+import org.neoteric.device.DeviceExtras.R
+import org.neoteric.device.DeviceExtras.ThermalLimiter
+import org.neoteric.device.DeviceExtras.ThermalLimiterTileService
 
 data class InstalledApp(val packageName: String, val label: String, val icon: Bitmap?)
 

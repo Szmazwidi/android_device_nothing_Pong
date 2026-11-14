@@ -3,7 +3,7 @@
     androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class,
 )
 
-package org.lunaris.device.DeviceExtras.ui
+package org.neoteric.device.DeviceExtras.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.Crossfade
@@ -37,7 +37,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import org.lunaris.device.DeviceExtras.R
+import org.neoteric.device.DeviceExtras.R
 
 @Composable
 internal fun touchAction(action: () -> Unit): () -> Unit {

@@ -3,7 +3,7 @@
     androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class,
 )
 
-package org.lunaris.device.DeviceExtras.ui
+package org.neoteric.device.DeviceExtras.ui
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.drop
-import org.lunaris.device.DeviceExtras.R
+import org.neoteric.device.DeviceExtras.R
 
 @Composable
 internal fun ThermalAppsPage(state: DeviceExtrasState, model: DeviceExtrasViewModel, back: () -> Unit) {

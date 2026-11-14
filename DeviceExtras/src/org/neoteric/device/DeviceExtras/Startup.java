@@ -16,7 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.lunaris.device.DeviceExtras;
+package org.neoteric.device.DeviceExtras;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

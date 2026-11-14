@@ -15,7 +15,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.lunaris.device.DeviceExtras;
+package org.neoteric.device.DeviceExtras;
 
 import android.content.Context;
 import android.util.Log;
@@ -23,7 +23,7 @@ import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceManager;
 
-import org.lunaris.device.DeviceExtras.FileUtils;
+import org.neoteric.device.DeviceExtras.FileUtils;
 
 public class OTGModeSwitch implements OnPreferenceChangeListener {
 

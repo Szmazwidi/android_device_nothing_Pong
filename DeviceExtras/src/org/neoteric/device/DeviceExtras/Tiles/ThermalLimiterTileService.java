@@ -15,14 +15,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.lunaris.device.DeviceExtras;
+package org.neoteric.device.DeviceExtras;
 
 import android.content.SharedPreferences;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import androidx.preference.PreferenceManager;
 
-import org.lunaris.device.DeviceExtras.DeviceExtras;
+import org.neoteric.device.DeviceExtras.DeviceExtras;
 
 public class ThermalLimiterTileService extends TileService {
 

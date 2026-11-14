@@ -1,6 +1,6 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
-package org.lunaris.device.DeviceExtras.ui
+package org.neoteric.device.DeviceExtras.ui
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -45,7 +45,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.lunaris.device.DeviceExtras.R
+import org.neoteric.device.DeviceExtras.R
 
 fun attachDeviceExtrasUi(activity: ComponentActivity, appsOnly: Boolean) {
     activity.enableEdgeToEdge()

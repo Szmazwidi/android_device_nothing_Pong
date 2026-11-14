@@ -15,11 +15,11 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
-package org.lunaris.device.DeviceExtras;
+package org.neoteric.device.DeviceExtras;
 
 import android.os.Bundle;
 import androidx.activity.ComponentActivity;
-import org.lunaris.device.DeviceExtras.ui.DeviceExtrasUiKt;
+import org.neoteric.device.DeviceExtras.ui.DeviceExtrasUiKt;
 
 public class DeviceExtrasActivity extends ComponentActivity {
 

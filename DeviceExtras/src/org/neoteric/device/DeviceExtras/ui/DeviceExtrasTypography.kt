@@ -15,7 +15,7 @@
  */
 @file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
-package org.lunaris.device.DeviceExtras.ui
+package org.neoteric.device.DeviceExtras.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
