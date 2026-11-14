@@ -6,6 +6,11 @@ toolchain. The build includes the 6.18.63 compatibility and IR fixes, the VIDC
 control query fix, FastRPC ADSP/SLPI restart registration and the closed-WLAN
 suspend fix.
 
+Szmazwidi maintains and co-develops the port and validates it on hardware.
+OpenAI Codex contributed implementation and documentation. The
+[attribution record](https://github.com/Szmazwidi/android_kernel_nothing_sm8475-modules-6.18/blob/pong-a17-6.18.63-wlan-fastrpc/docs/pong-6.18.63-attribution.md)
+links the upstream, donor and local work.
+
 ## Build from sources
 
 Use a Linux host with the Android kernel build dependencies, `repo` and
@@ -50,5 +55,5 @@ The patch retains its original commit metadata and revert reference.
   both RPMsg channels. The WLAN test booted Android with enforcing
   SELinux/verity and rejoined a saved network. Its untethered idle drain and
   recovery after a WLAN HAL failure still need measurement.
-- A full OTA using this exact combined build still needs packaging and
-  on-device qualification. This is a source candidate for development.
+- The full OTA using this exact combined build passed host signature and
+  image checks. On-device OTA qualification is pending. This is a source candidate for development.
