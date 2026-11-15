@@ -66,7 +66,7 @@ class DeviceExtrasViewModel(application: Application) : AndroidViewModel(applica
     private val mutableMessages = MutableSharedFlow<Int>(extraBufferCapacity = 1)
     val messages = mutableMessages.asSharedFlow()
     private val settingsLock = Mutex()
-    private var capabilities: Triple<Boolean, Boolean, Boolean>? = null
+    private var capabilities: Pair<Boolean, Boolean>? = null
     private var appsJob: Job? = null
     private var appsLoaded = false
 
@@ -93,8 +93,8 @@ class DeviceExtrasViewModel(application: Application) : AndroidViewModel(applica
 
     private suspend fun refreshLocked() {
         val snapshot = withContext(Dispatchers.IO) {
-            val support = capabilities ?: Triple(
-                ChargingLimiter.isSupported(), ThermalLimiter.isSupported(), OTGModeSwitch.isSupported(),
+            val support = capabilities ?: Pair(
+                ThermalLimiter.isSupported(), OTGModeSwitch.isSupported(),
             ).also { capabilities = it }
             val warm = prefs.getInt(ThermalLimiter.KEY_TEMP_WARM, ThermalLimiter.TEMP_DEFAULT_WARM)
                 .coerceIn(ThermalLimiter.TEMP_MIN, ThermalLimiter.TEMP_MAX)
@@ -110,13 +110,13 @@ class DeviceExtrasViewModel(application: Application) : AndroidViewModel(applica
                 ?.takeIf { it in -30f..100f }
             DeviceExtrasState(
                 loading = false,
-                chargingSupported = support.first,
+                chargingSupported = ChargingLimiter.isSupported(),
                 chargingEnabled = ChargingLimiter.isEnabled(),
                 chargingProfile = ChargingLimiter.getProfile(),
-                thermalSupported = support.second,
+                thermalSupported = support.first,
                 thermalEnabled = prefs.getBoolean(DeviceExtras.KEY_THERMAL_LIMITER, false),
-                otgSupported = support.third,
-                otgEnabled = support.third && OTGModeSwitch.isCurrentlyEnabled(),
+                otgSupported = support.second,
+                otgEnabled = support.second && OTGModeSwitch.isCurrentlyEnabled(),
                 temperature = temperature,
                 warm = warm,
                 high = high,
