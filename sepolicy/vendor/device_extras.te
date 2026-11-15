@@ -6,3 +6,4 @@ allow device_extras sysfs_kgsl_gpuclk:dir r_dir_perms;
 allow device_extras sysfs_kgsl_gpuclk:{ file lnk_file } rw_file_perms;
 allow device_extras vendor_sysfs_kgsl:dir search;
 allow device_extras vendor_sysfs_kgsl:file { getattr open read write };
+get_prop(device_extras, vendor_nt_chg_scenario_fcc_prop)

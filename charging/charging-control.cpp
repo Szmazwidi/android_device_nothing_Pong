@@ -25,6 +25,9 @@ constexpr char kWirelessOnline[] = "/sys/class/power_supply/wireless/online";
 constexpr char kScenarioFcc[] = "/sys/class/qcom-battery/scenario_fcc";
 constexpr char kEnabledProperty[] = "persist.sys.nt_chg.enabled";
 constexpr char kProfileProperty[] = "persist.sys.nt_chg.profile";
+#ifdef NT_CHG_REPORT_AVAILABILITY
+constexpr char kAvailableProperty[] = "vendor.nt_chg.scenario_fcc.available";
+#endif
 constexpr auto kPollInterval = std::chrono::milliseconds(500);
 constexpr auto kHealthInfoTimeout = std::chrono::minutes(2);
 
@@ -127,6 +130,10 @@ int ChargeStatusListener::get_charge_temp() {
 
 void ChargeStatusListener::limitCharge() {
     charging::TemperaturePolicy policy;
+#ifdef NT_CHG_REPORT_AVAILABILITY
+    bool verified = false;
+    android::base::SetProperty(kAvailableProperty, "false");
+#endif
     while (true) {
         HealthInfo info;
         std::chrono::seconds updated;
@@ -168,8 +175,27 @@ void ChargeStatusListener::limitCharge() {
         }
 
         int previous;
-        if (!read_int(kScenarioFcc, &previous) || previous != current) {
-            if (write_value(kScenarioFcc, current) == 0) {
+        const bool currentMatches = read_int(kScenarioFcc, &previous) && previous == current;
+#ifdef NT_CHG_REPORT_AVAILABILITY
+        if (!verified || !currentMatches) {
+#else
+        if (!currentMatches) {
+#endif
+            const int result = write_value(kScenarioFcc, current);
+            if (result == -EOPNOTSUPP) {
+#ifdef NT_CHG_REPORT_AVAILABILITY
+                android::base::SetProperty(kAvailableProperty, "false");
+#endif
+                ALOGW("Charging limit is unavailable on this kernel");
+                return;
+            }
+            if (result == 0) {
+#ifdef NT_CHG_REPORT_AVAILABILITY
+                int applied;
+                if (!verified && read_int(kScenarioFcc, &applied) && applied == current) {
+                    verified = android::base::SetProperty(kAvailableProperty, "true");
+                }
+#endif
                 ALOGD("Temperature: %d mC, charging cap: %d mA, limiter enabled: %d", temperature,
                       current, enabled);
             }

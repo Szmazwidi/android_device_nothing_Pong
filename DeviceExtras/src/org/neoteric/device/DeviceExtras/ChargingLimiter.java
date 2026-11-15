@@ -13,7 +13,7 @@ public final class ChargingLimiter {
     private ChargingLimiter() {}
 
     public static boolean isSupported() {
-        return FileUtils.isFileReadable("/sys/class/qcom-battery/scenario_fcc");
+        return SystemProperties.getBoolean("vendor.nt_chg.scenario_fcc.available", false);
     }
 
     public static boolean isEnabled() {

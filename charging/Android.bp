@@ -37,6 +37,7 @@ cc_defaults {
 cc_binary {
     name: "nt-charging-control",
     init_rc: ["charging-control.rc"],
+    cflags: ["-DNT_CHG_REPORT_AVAILABILITY"],
     defaults: ["nt-charging-control-defaults"],
     vendor: true,
 }

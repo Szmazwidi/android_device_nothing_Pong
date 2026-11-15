@@ -1,2 +1,3 @@
 # Fingerprint
 vendor_internal_prop(system_fingerprint_prop)
+vendor_public_prop(vendor_nt_chg_scenario_fcc_prop)
