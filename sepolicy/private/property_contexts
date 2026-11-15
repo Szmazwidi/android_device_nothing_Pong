@@ -18,3 +18,4 @@ sys.pong.camera.refresh_needed    u:object_r:pong_camera_health_prop:s0 exact in
 
 persist.sys.nt_chg.enabled                   u:object_r:nt_charging_control_prop:s0 exact bool
 persist.sys.nt_chg.profile                   u:object_r:nt_charging_control_prop:s0 exact enum slow mid fast
+bluetooth.a2dp.source.lhdcv5_priority.config u:object_r:bluetooth_config_prop:s0 exact int
