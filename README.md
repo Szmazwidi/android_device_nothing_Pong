@@ -1,6 +1,19 @@
 # Nothing Phone (2) — Pong
 
-This branch packages the CLG43 community source candidate for Android 17 and
+This branch contains the Android 17 / Linux 6.18.64 RC device configuration.
+The [6.18.64 build recipe](manifests/community-6.18.64-rc/README.md) pins the
+kernel, all modules and the Android source snapshot. It includes the charging,
+DeviceExtras and power-HAL follow-ups used in the signed OTA tested on
+17 November 2026.
+
+See the [qualification](manifests/community-6.18.64-rc/qualification.json) for
+tested behavior and open release gates, and the
+[attribution record](manifests/community-6.18.64-rc/ATTRIBUTION.md) for
+Szmazwidi, OpenAI Codex, Claude, upstream and donor contributions.
+
+## Historical CLG43 recipe
+
+The CLG43 recipe packages the community source candidate for Android 17 and
 Linux 6.18.60, with 293 signed modules and 100 first-stage modules. Select the
 matching community prebuilt and kernel/module manifest as one coherent set.
 The public source recipe and distribution limits are recorded in the companion

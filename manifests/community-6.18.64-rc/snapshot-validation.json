@@ -1,0 +1,13 @@
+{
+  "status": "HOST_RECIPE_CHECKS_PASS",
+  "android_projects": 1260,
+  "all_project_revisions_immutable": true,
+  "local_remote_urls": false,
+  "snapshot_patch_entries": 6,
+  "snapshot_distinct_projects": 5,
+  "snapshot_pristine_preflight_passed": true,
+  "snapshot_application_passed": true,
+  "snapshot_idempotent_recheck_passed": true,
+  "kernel_and_module_source_revisions_pushed_and_verified": true,
+  "complete_clean_android_resync_tested": false
+}

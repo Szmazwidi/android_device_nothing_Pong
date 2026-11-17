@@ -1,0 +1,22 @@
+diff --git a/gpt-utils/gpt-utils.cpp b/gpt-utils/gpt-utils.cpp
+index e1db693..d119c5c 100644
+--- a/gpt-utils/gpt-utils.cpp
++++ b/gpt-utils/gpt-utils.cpp
+@@ -689,9 +689,17 @@ int gpt_utils_set_xbl_boot_partition(enum boot_chain chain)
+         if (get_scsi_node_from_bootdevice(boot_dev,
+                                 sg_dev_node,
+                                 sizeof(sg_dev_node))) {
++#ifdef _BSG_FRAMEWORK_KERNEL_HEADERS
++                /* The boot LUN is set through /dev/ufs-bsg*; the SCSI generic
++                 * node is not used. Kernels without CONFIG_CHR_DEV_SG (GKI 6.x)
++                 * have no scsi_generic directory, so do not fail here. */
++                fprintf(stderr, "%s: no scsi generic node for %s, using ufs-bsg\n",
++                                __func__, boot_dev);
++#else
+                 fprintf(stderr, "%s: Failed to get scsi node path for xblbak\n",
+                                 __func__);
+                 goto error;
++#endif
+         }
+         /* set boot lun using /dev/sg or /dev/ufs-bsg* */
+         if (set_boot_lun(sg_dev_node, boot_lun_id)) {

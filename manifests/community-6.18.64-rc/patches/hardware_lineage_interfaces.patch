@@ -1,0 +1,313 @@
+diff --git a/power-libperfmgr/Android.bp b/power-libperfmgr/Android.bp
+index af0b3731703ff421266c24a05981072ade57164a..8dca02971bcee809958b659db5160dbe0060790b 100644
+--- a/power-libperfmgr/Android.bp
++++ b/power-libperfmgr/Android.bp
+@@ -30,6 +30,7 @@ cc_binary {
+         "libbinder_ndk",
+         "libcutils",
+         "libdl",
++        "libjsoncpp",
+         "liblog",
+         "libperfmgr",
+         "libprocessgroup",
+diff --git a/power-libperfmgr/aidl/ChannelGroup.cpp b/power-libperfmgr/aidl/ChannelGroup.cpp
+index 5ac1dee382636e2ff03f49f56e423e4cea7081ca..d9fcccbcdc9e8f5a60d0b8f4967156fcca1a0365 100644
+--- a/power-libperfmgr/aidl/ChannelGroup.cpp
++++ b/power-libperfmgr/aidl/ChannelGroup.cpp
+@@ -192,7 +192,14 @@ void ChannelGroup<PowerSessionManagerT, PowerHintSessionT>::runChannelGroup() {
+                                                 durationData.workPeriodStartTimestampNanos});
+                             }
+                             if (!durations.empty()) {
+-                                sessionPtr->reportActualWorkDuration(durations);
++                                if constexpr (requires {
++                                                  sessionPtr->reportActualWorkDurationFromChannel(
++                                                          durations);
++                                              }) {
++                                    sessionPtr->reportActualWorkDurationFromChannel(durations);
++                                } else {
++                                    sessionPtr->reportActualWorkDuration(durations);
++                                }
+                                 // Decrement the message index so we don't skip the next item
+                                 --messageIndex;
+                             }
+diff --git a/power-libperfmgr/aidl/PowerHintSession.cpp b/power-libperfmgr/aidl/PowerHintSession.cpp
+index 40688bbfe9e37342168c5cec7a7d667dbc79fee2..183ae6d54fde8a4f87aa42dd8b7a1412a5d88d90 100644
+--- a/power-libperfmgr/aidl/PowerHintSession.cpp
++++ b/power-libperfmgr/aidl/PowerHintSession.cpp
+@@ -421,6 +421,22 @@ template <class HintManagerT, class PowerSessionManagerT>
+ ndk::ScopedAStatus PowerHintSession<HintManagerT, PowerSessionManagerT>::reportActualWorkDuration(
+         const std::vector<WorkDuration> &actualDurations) {
+     std::scoped_lock lock{mPowerHintSessionLock};
++    return reportActualWorkDurationLocked(actualDurations);
++}
++
++template <class HintManagerT, class PowerSessionManagerT>
++void PowerHintSession<HintManagerT, PowerSessionManagerT>::reportActualWorkDurationFromChannel(
++        const std::vector<WorkDuration> &actualDurations) {
++    std::scoped_lock lock{mPowerHintSessionLock};
++    if (mSessionClosed || !mDescriptor->is_active.load()) {
++        return;
++    }
++    reportActualWorkDurationLocked(actualDurations);
++}
++
++template <class HintManagerT, class PowerSessionManagerT>
++ndk::ScopedAStatus PowerHintSession<HintManagerT, PowerSessionManagerT>::reportActualWorkDurationLocked(
++        const std::vector<WorkDuration> &actualDurations) {
+     if (mSessionClosed) {
+         ALOGE("Error: session is dead");
+         return ndk::ScopedAStatus::fromExceptionCode(EX_ILLEGAL_STATE);
+diff --git a/power-libperfmgr/aidl/PowerHintSession.h b/power-libperfmgr/aidl/PowerHintSession.h
+index f32507927b96fc438f06b2463a7c2c6b5d15a0df..d87f1022ffffc495697d40d847f4bbed2a7da446 100644
+--- a/power-libperfmgr/aidl/PowerHintSession.h
++++ b/power-libperfmgr/aidl/PowerHintSession.h
+@@ -63,6 +63,7 @@ class PowerHintSession : public BnPowerHintSession, public Immobile {
+     ndk::ScopedAStatus updateTargetWorkDuration(int64_t targetDurationNanos) override;
+     ndk::ScopedAStatus reportActualWorkDuration(
+             const std::vector<WorkDuration> &actualDurations) override;
++    void reportActualWorkDurationFromChannel(const std::vector<WorkDuration> &actualDurations);
+     ndk::ScopedAStatus sendHint(SessionHint hint) override;
+     ndk::ScopedAStatus setMode(SessionMode mode, bool enabled) override;
+     ndk::ScopedAStatus setThreads(const std::vector<int32_t> &threadIds) override;
+@@ -96,6 +97,8 @@ class PowerHintSession : public BnPowerHintSession, public Immobile {
+     static std::unique_ptr<SessionRecords> makeSessionRecords(const AdpfConfig &config);
+     ndk::ScopedAStatus setModeLocked(SessionMode mode, bool enabled)
+             REQUIRES(mPowerHintSessionLock);
++    ndk::ScopedAStatus reportActualWorkDurationLocked(
++            const std::vector<WorkDuration> &actualDurations) REQUIRES(mPowerHintSessionLock);
+ 
+     // Data
+     PowerSessionManagerT *mPSManager;
+diff --git a/power-libperfmgr/aidl/PowerSessionManager.cpp b/power-libperfmgr/aidl/PowerSessionManager.cpp
+index 7052ed3ef097583d228948ba0b129ae19a7da80c..d48140a79d44c9c07b17fa3bfcd5b7e67b63f57a 100644
+--- a/power-libperfmgr/aidl/PowerSessionManager.cpp
++++ b/power-libperfmgr/aidl/PowerSessionManager.cpp
+@@ -25,11 +25,13 @@
+ #include <private/android_filesystem_config.h>
+ #include <processgroup/processgroup.h>
+ #include <sys/syscall.h>
++#include <unistd.h>
+ #include <utils/Trace.h>
+ 
+ #include "AdpfTypes.h"
+ #include "AppDescriptorTrace.h"
+ #include "AppHintDesc.h"
++#include "SupportManager.h"
+ #include "tests/mocks/MockHintManager.h"
+ #include "utils/ThermalStateListener.h"
+ 
+@@ -73,7 +75,7 @@ static int set_uclamp(int tid, UclampRange range) {
+     attr.sched_util_min = range.uclampMin;
+     attr.sched_util_max = range.uclampMax;
+ 
+-    const int ret = syscall(__NR_sched_setattr, tid, attr, 0);
++    const int ret = syscall(__NR_sched_setattr, tid, &attr, 0);
+     if (ret) {
+         ALOGW("sched_setattr failed for thread %d, err=%d", tid, errno);
+         return errno;
+@@ -704,31 +706,34 @@ void PowerSessionManager<HintManagerT>::updateHboostStatistics(int64_t sessionId
+ }
+ 
+ template <class HintManagerT>
+-std::vector<std::string> PowerSessionManager<HintManagerT>::getSessionTaskProfiles(int64_t sessionId,
+-                                                                     bool isSetProfile) const {
+-    auto sessValPtr = mSessionTaskMap.findSession(sessionId);
+-    if (isSetProfile) {
+-        if (nullptr == sessValPtr) {
+-            return {"SCHED_QOS_SENSITIVE_STANDARD"};
+-        }
+-        if (sessValPtr->procTag == ProcessTag::SYSTEM_UI) {
+-            return {"SCHED_QOS_SENSITIVE_EXTREME"};
+-        } else {
+-            switch (sessValPtr->tag) {
+-                case SessionTag::SURFACEFLINGER:
+-                    if (HintManagerT::GetInstance()->GetOtherConfigs().enableSFPreferHighCap &&
+-                        !powerhal::flags::ramp_down_sf_prefer_high_cap())
+-                        return {"SCHED_QOS_SENSITIVE_EXTREME", "PreferHighCapSet"};
+-                    return {"SCHED_QOS_SENSITIVE_EXTREME"};
+-                case SessionTag::HWUI:
+-                    return {"SCHED_QOS_SENSITIVE_EXTREME"};
+-                default:
+-                    return {"SCHED_QOS_SENSITIVE_STANDARD"};
+-            }
+-        }
+-    } else {
+-        return {"SCHED_QOS_NONE"};
++std::vector<std::string> PowerSessionManager<HintManagerT>::getSessionTaskProfiles(
++        int64_t sessionId, bool isSetProfile) const {
++    const bool supportsSchedQos = SupportManager::hasTaskProfile("SCHED_QOS_NONE");
++    if (!isSetProfile) {
++        return supportsSchedQos ? std::vector<std::string>{"SCHED_QOS_NONE"}
++                                : std::vector<std::string>{};
+     }
++
++    std::lock_guard<std::mutex> lock(mSessionTaskMapMutex);
++    auto session = mSessionTaskMap.findSession(sessionId);
++    const bool useExtreme = session != nullptr &&
++                            (session->procTag == ProcessTag::SYSTEM_UI ||
++                             session->tag == SessionTag::SURFACEFLINGER ||
++                             session->tag == SessionTag::HWUI);
++    const std::string qosProfile =
++            useExtreme ? "SCHED_QOS_SENSITIVE_EXTREME" : "SCHED_QOS_SENSITIVE_STANDARD";
++    std::vector<std::string> profiles;
++    if (supportsSchedQos && SupportManager::hasTaskProfile(qosProfile)) {
++        profiles.push_back(qosProfile);
++    }
++    if (session != nullptr && session->procTag != ProcessTag::SYSTEM_UI &&
++        session->tag == SessionTag::SURFACEFLINGER &&
++        HintManagerT::GetInstance()->GetOtherConfigs().enableSFPreferHighCap &&
++        !powerhal::flags::ramp_down_sf_prefer_high_cap() &&
++        SupportManager::hasTaskProfile("PreferHighCapSet")) {
++        profiles.push_back("PreferHighCapSet");
++    }
++    return profiles;
+ }
+ 
+ template <class HintManagerT>
+diff --git a/power-libperfmgr/aidl/SupportManager.cpp b/power-libperfmgr/aidl/SupportManager.cpp
+index 73bf66590225de533ba29ba7a6f496e363914fe3..272b1c239fe7e87e8ac1991c9653934558f125fe 100644
+--- a/power-libperfmgr/aidl/SupportManager.cpp
++++ b/power-libperfmgr/aidl/SupportManager.cpp
+@@ -16,11 +16,18 @@
+ 
+ #include "SupportManager.h"
+ 
++#include <android-base/file.h>
++#include <android-base/logging.h>
++#include <android-base/properties.h>
++#include <json/json.h>
+ #include <perfmgr/HintManager.h>
+ 
+ #include <bitset>
++#include <cerrno>
+ #include <map>
++#include <memory>
+ #include <type_traits>
++#include <unordered_set>
+ 
+ #include "AdpfTypes.h"
+ 
+@@ -112,6 +119,65 @@ std::map<SessionHint, int32_t> kSessionHintEarliestVersionMap = kSessionHintEarl
+ std::map<SessionMode, int32_t> kSessionModeEarliestVersionMap = kSessionModeEarliestVersion;
+ std::map<SessionTag, int32_t> kSessionTagEarliestVersionMap = kSessionTagEarliestVersion;
+ 
++bool SupportManager::hasTaskProfile(const std::string &name) {
++    struct ProfileDefinitions {
++        std::unordered_set<std::string> names;
++        bool complete = true;
++    };
++    static const auto profiles = [] {
++        ProfileDefinitions definitions;
++        const auto load = [&](const std::string &path, bool optional) {
++            std::string contents;
++            if (!::android::base::ReadFileToString(path, &contents)) {
++                if (!optional || errno != ENOENT) {
++                    LOG(WARNING) << "Unable to inspect task profiles from " << path;
++                    definitions.complete = false;
++                }
++                return;
++            }
++            Json::CharReaderBuilder builder;
++            std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
++            Json::Value root;
++            std::string error;
++            if (!reader->parse(contents.data(), contents.data() + contents.size(), &root, &error) ||
++                !root.isObject()) {
++                LOG(WARNING) << "Unable to parse task profiles from " << path;
++                definitions.complete = false;
++                return;
++            }
++            for (const auto *group : {"Profiles", "AggregateProfiles"}) {
++                const auto &entries = root[group];
++                if (entries.isNull()) {
++                    continue;
++                }
++                if (!entries.isArray()) {
++                    definitions.complete = false;
++                    continue;
++                }
++                for (const auto &profile : entries) {
++                    if (!profile.isObject() || !profile["Name"].isString()) {
++                        definitions.complete = false;
++                        continue;
++                    }
++                    definitions.names.insert(profile["Name"].asString());
++                }
++            }
++        };
++        load("/etc/task_profiles.json", false);
++        const auto apiLevel =
++                ::android::base::GetUintProperty<unsigned int>("ro.product.first_api_level", 0);
++        if (apiLevel > 0) {
++            load("/etc/task_profiles/task_profiles_" + std::to_string(apiLevel) + ".json", true);
++        }
++        load("/vendor/etc/task_profiles.json", true);
++        if (!definitions.complete) {
++            LOG(WARNING) << "Task profile inspection incomplete; preserving profile application";
++        }
++        return definitions;
++    }();
++    return !profiles.complete || profiles.names.contains(name);
++}
++
+ SupportInfo SupportManager::makeSupportInfo() {
+     SupportInfo out;
+     out.usesSessions = HintManager::GetInstance()->IsAdpfSupported();
+diff --git a/power-libperfmgr/aidl/SupportManager.h b/power-libperfmgr/aidl/SupportManager.h
+index c89bba217308cfd7832212f0e9023d3e23ebb4d2..234935787b49b767c0d9139cd63227c68edc4a3b 100644
+--- a/power-libperfmgr/aidl/SupportManager.h
++++ b/power-libperfmgr/aidl/SupportManager.h
+@@ -16,6 +16,8 @@
+ 
+ #pragma once
+ 
++#include <string>
++
+ #include "AdpfTypes.h"
+ 
+ namespace aidl::google::hardware::power::impl::pixel {
+@@ -23,6 +25,7 @@ namespace aidl::google::hardware::power::impl::pixel {
+ class SupportManager {
+   public:
+     static SupportInfo makeSupportInfo();
++    static bool hasTaskProfile(const std::string &name);
+ 
+   private:
+     static bool getAdfpSupported();
+diff --git a/power-libperfmgr/aidl/service.cpp b/power-libperfmgr/aidl/service.cpp
+index 8cc87e27e00942403c6ce422a99c1eb422c15066..54691c48e9155099108c181c26c362d656c555db 100644
+--- a/power-libperfmgr/aidl/service.cpp
++++ b/power-libperfmgr/aidl/service.cpp
+@@ -21,17 +21,19 @@
+ #include <android/binder_ibinder_platform.h>
+ #include <android/binder_manager.h>
+ #include <android/binder_process.h>
+-#include <processgroup/processgroup.h>
+ #include <perfmgr/HintManager.h>
++#include <processgroup/processgroup.h>
+ 
+ #include <thread>
+ 
+ #include "Power.h"
+ #include "PowerExt.h"
++#include "SupportManager.h"
+ #include "utils/ThermalStateListener.h"
+ 
+ using aidl::google::hardware::power::impl::pixel::Power;
+ using aidl::google::hardware::power::impl::pixel::PowerExt;
++using aidl::google::hardware::power::impl::pixel::SupportManager;
+ using aidl::google::hardware::power::impl::pixel::ThermalStateListener;
+ using ::android::perfmgr::HintManager;
+ 
+@@ -47,8 +49,9 @@ int main() {
+     }
+ 
+     // set task profile "PreferIdle" to lower scheduling latency.
+-    if (!SetTaskProfiles(0, {"PreferIdleSet"})) {
+-        LOG(WARNING) << "Device does not support 'PreferIdleSet' task profile.";
++    if (SupportManager::hasTaskProfile("PreferIdleSet") &&
++        !SetTaskProfiles(0, {"PreferIdleSet"})) {
++        LOG(WARNING) << "Failed to apply 'PreferIdleSet' task profile.";
+     }
+ 
+     // single thread

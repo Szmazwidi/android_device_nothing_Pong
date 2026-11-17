@@ -1,0 +1,176 @@
+[
+  {
+    "project": "system/sepolicy",
+    "revision": "a09cd5e0f6f9a85707460914970cb5d17054c2cb",
+    "patch": "system_sepolicy.patch",
+    "sha256": "ebd6915d7a3ace667c7c20dd9f591012211cd5f1ea7d1256e44f42c8e61525ab",
+    "files": [
+      {
+        "path": "private/compat/202504/202504.ignore.cil",
+        "before": "baeccbf6f4407f25ea877ae2fe30106821a7237f9863a8a34778373da9e1b937",
+        "after": "5cf1c1467034157d098d9d5741503f0c19fb96bb0cf6381e391c6699990c1ce7"
+      }
+    ]
+  },
+  {
+    "project": "hardware/qcom-caf/bootctrl",
+    "revision": "25092672e644459db328b43fd1c7c57cbff65c91",
+    "patch": "bootctrl-idempotent-success.patch",
+    "sha256": "afd631a3f547a1e710f31d936f5789c37de18bdc44c4b91cd044dbdb5eea03a7",
+    "files": [
+      {
+        "path": "1.1/libboot_control_qti/libboot_control_qti.cpp",
+        "before": "0b33f58808616fce55b51e5f06a4f390735389c82aa199f3467cd6c0913f29a1",
+        "after": "f2ff9e70d8b5a16fe6042fbd20ad2172599e701a87e31e523abeb2ac640f9ca5"
+      }
+    ]
+  },
+  {
+    "project": "hardware/qcom-caf/bootctrl",
+    "revision": "25092672e644459db328b43fd1c7c57cbff65c91",
+    "patch": "bootctrl-no-scsi-generic.patch",
+    "sha256": "6172635a4824d312ec2034efcfac1a861632f72b3383ad207d634decfad083c6",
+    "files": [
+      {
+        "path": "gpt-utils/gpt-utils.cpp",
+        "before": "0d363f87139b28d34ab518e2fa618110aad6e53a12cceb905f80da8f2a39569e",
+        "after": "cdcecf8e80719e7000f73a283f245e6b967e1f5fc5ceb6c597dd318026009c91"
+      }
+    ]
+  },
+  {
+    "project": "hardware/lineage/interfaces",
+    "revision": "740e8d435e807bf742518f40f3086b4ea19acc11",
+    "patch": "hardware_lineage_interfaces.patch",
+    "sha256": "41a4dcbf6ba53d089e296d86c6acbfa8e78700979424f34c4483b9714afb700d",
+    "files": [
+      {
+        "path": "power-libperfmgr/Android.bp",
+        "before": "f8adcef17722b7847d4e482e3adcad7c8716bbd12923e1a91d12437fd66c6050",
+        "after": "bbd230158dd41aff7b6213a5ef22d08fcd342e4473259db324d055b641d9426f"
+      },
+      {
+        "path": "power-libperfmgr/aidl/ChannelGroup.cpp",
+        "before": "1246e568301b7dcd30bc707cbf31a89d7ab34406e698e4a22bba1be043707363",
+        "after": "84e0ed578fe5261e2725fe672fd92a5e8fec48a9ee6059647dce62e9e8bb4a14"
+      },
+      {
+        "path": "power-libperfmgr/aidl/PowerHintSession.cpp",
+        "before": "16677e1520b9933addedb9428f1fc01cc2c9b7d933c1fa596a2d9d960b2bb2e0",
+        "after": "34c01f29d52581eab8defe9b167cdb8ad1e16cdab06e5dbb1c452b0f8889d771"
+      },
+      {
+        "path": "power-libperfmgr/aidl/PowerHintSession.h",
+        "before": "0ffb71c829d0a52310a26d9414669de80ba889d722de61ee4f5a67bf89ddbd90",
+        "after": "4cb21cf6520b0fed944da5609b58915cb26bccb6b2ca39835357645b3ca4e191"
+      },
+      {
+        "path": "power-libperfmgr/aidl/PowerSessionManager.cpp",
+        "before": "6fedae176a9ec1c3925067ea62ae23705c32e1be5a4776cc104ec7fe712547fb",
+        "after": "ea38f7e6174b9812b2d81581b2eeec9dfb4033bda637058f1a33d15e1dcb2619"
+      },
+      {
+        "path": "power-libperfmgr/aidl/SupportManager.cpp",
+        "before": "62156eff7f4fcc28719599cb917353c946b01bfdf656870c45ae2ee34ec99700",
+        "after": "4c51f26c7fe753c36789e624247153b59493e859c38c62f4c73abd99d4d5d626"
+      },
+      {
+        "path": "power-libperfmgr/aidl/SupportManager.h",
+        "before": "d6dae2f6222a3c9e37c3d862e1cd56d02c3900628162646aa8c9432b11936727",
+        "after": "dfb423c717399ce29e78ba34e67cc9daf19ba66b37f8d50d6386468ac8343056"
+      },
+      {
+        "path": "power-libperfmgr/aidl/service.cpp",
+        "before": "04044c71dff377f498563d45c9c29faf3c26c96bb8356c73131ecb27ad11d492",
+        "after": "d30e219d1ec4c50fce6de82b02e559d2313a8610012493efc5e7d3ce4f3f132a"
+      }
+    ],
+    "source_revision": "c7bee50826f21ed77b1ec4e899082fa428e5eaba",
+    "source_commits": [
+      {
+        "commit": "304ad50341a5b4f6219b111496cd0bfc2e6b5375",
+        "author": "Ghosuto",
+        "author_email": "clash.raja10@gmail.com",
+        "message": "power-libperfmgr: Pass sched_attr by pointer\n\nSigned-off-by: Ghosuto <clash.raja10@gmail.com>\n(cherry picked from commit b45a671fef8a494e81b9d0edae3230d8d4bef655)"
+      },
+      {
+        "commit": "4278ff79ffe3d94bab88843f2032d5d2eeac4a74",
+        "author": "Ghosuto",
+        "author_email": "clash.raja10@gmail.com",
+        "message": "power: Guard optional Pixel scheduler task profiles\n\nLineage devices without Pixel vendor_sched support can still use CPU\nADPF through sched_setattr, but every session currently tries to apply\nSCHED_QOS profiles that are not defined on those devices.\n\nSigned-off-by: Ghosuto <clash.raja10@gmail.com>\n(cherry picked from commit 2c2cd5d6400da9d8718191efe3feb618cd47feae)"
+      },
+      {
+        "commit": "75f0c7fada29b40e33bb911449c7eaf290d1593c",
+        "author": "Ghosuto",
+        "author_email": "clash.raja10@gmail.com",
+        "message": "power: Drop delayed FMQ reports after pause or close\n\nThe framework sends session lifecycle calls over Binder while apps can\nreport work through FMQ. A queued frame can therefore be consumed after\npause or close, producing an error for an expected asynchronous race.\n\nSigned-off-by: Ghosuto <clash.raja10@gmail.com>\n(cherry picked from commit 71e207bf2a5cfd7e0f54a6e442d7d2e1b247d74d)"
+      },
+      {
+        "commit": "58146c37d972a6d139793dcc59032d458fe0e0ad",
+        "author": "Ghosuto",
+        "author_email": "clash.raja10@gmail.com",
+        "message": "power: Discover optional task profiles from vendor-accessible config\n\nisProfileValidForProcess is hidden behind __ANDROID_VNDK__, so vendor\nPower HAL builds cannot use it. Cache profile names from the same system,\nlaunch-API and vendor configuration files that libprocessgroup loads,\nincluding aggregate profiles, and use the public task-profile setter.\nPreserve profile application if inspection is incomplete so configuration\nor permission errors remain visible instead of disabling device features.\n\nSigned-off-by: Ghosuto <clash.raja10@gmail.com>\n(cherry picked from commit b90fd8b4bec19d0cc3a0d6105cf838d72694342e)"
+      },
+      {
+        "commit": "c7bee50826f21ed77b1ec4e899082fa428e5eaba",
+        "author": "Szmazwidi",
+        "author_email": "czarnyjednorozec@gmail.com",
+        "message": "Merge commit '740e8d435e807bf742518f40f3086b4ea19acc11' into donor-integration"
+      }
+    ]
+  },
+  {
+    "project": "hardware/google/pixel",
+    "revision": "8bd3c71cf2be40cfbe8f5a4b9bf5574ee9fbc624",
+    "patch": "hardware_google_pixel.patch",
+    "sha256": "577fa89623510f199c1d8587932a4acf54a04604eb28af250702a7fdb692b86c",
+    "files": [
+      {
+        "path": "power-libperfmgr/libperfmgr/HintManager.cc",
+        "before": "80a5a10b99aefa963d70597a8391c0e80b61f8d5e03e8e5c9a6bee89d77a7f03",
+        "after": "e6b6dc49e2b36fc68206519f0095f17c7f066919d50ecf7d43339392d47bd7db"
+      },
+      {
+        "path": "power-libperfmgr/libperfmgr/include/perfmgr/HintManager.h",
+        "before": "773b41fe447fc00949acf55e3be30334e6596222cf8a057b329b5ba7eaf12ab6",
+        "after": "cf5d1f0134377b17dc18ad5f814d3827a2e0d9358513bfea23c6d84e1090616d"
+      }
+    ],
+    "source_revision": "f3a9e2c332040700169bf8097c6fae17a2e747e5",
+    "source_commits": [
+      {
+        "commit": "f3a9e2c332040700169bf8097c6fae17a2e747e5",
+        "author": "Ghosuto",
+        "author_email": "clash.raja10@gmail.com",
+        "message": "libperfmgr: Synchronize ADPF profiles and callback registrations\n\nADPF event delivery can iterate callback storage while another thread\nregisters or unregisters a session. The original implementation permits\niterator invalidation and access to a callback object that has been freed.\n\nGuard the profile maps, legacy profile index, and callback registry.\nDeliver snapshots of owned callback registrations without holding the\nregistry mutex, and mark removed registrations inactive. Callers must\nstill protect the lifetime of objects captured by their callbacks.\n\nKeep the two-argument registration behavior and add an overload that\nnotifies a new subscriber of the current profile. Serialize that initial\nnotification with event delivery so a session registered after construction\ncannot miss a profile change.\n\nThe original callback registry reproduced an AddressSanitizer\nheap-use-after-free during concurrent registration and delivery. Host\nchecks using the actual header, parser, callback methods, and Lineage HAL\ncallback implementation pass ASan, UBSan, and TSan. A full Android build\nand post-flash validation remain necessary.\n\nSigned-off-by: Ghosuto <clash.raja10@gmail.com>"
+      }
+    ]
+  },
+  {
+    "project": "system/update_engine",
+    "revision": "23d98b79f652ffb5cc1c1c4fb080c579ee2dbe45",
+    "patch": "system_update_engine.patch",
+    "sha256": "f2f0e1325c0aad8e95e48e754e90011b10e33940812f56ef83b18716bc3ad9dc",
+    "files": [
+      {
+        "path": "aosp/hardware_android.cc",
+        "before": "31ceb23c0c43c1d5f74f92ab2051d6cc6362cab2391823057caf8edad7aa7475",
+        "after": "a87f44505833de87c312b854171d29b1fbfbaca802d50df31c4c74f559cdfc37"
+      },
+      {
+        "path": "payload_consumer/payload_verifier.cc",
+        "before": "14ffbea5eb26afea484254500a39e74062e18c231882b8f0643febb3c90e2b14",
+        "after": "cbb9093bbc37ec64d30735c342cb3e2be8c768a146a662893152edc585b31194"
+      }
+    ],
+    "source_revision": "f28ea091496d56edec04dd5dbf89094d59b8b118",
+    "source_commits": [
+      {
+        "commit": "f28ea091496d56edec04dd5dbf89094d59b8b118",
+        "author": "OpenAI Codex",
+        "author_email": "codex@openai.com",
+        "message": "Revert \"update_engine: Always disable signature and downgrade checks\"\n\nThis reverts commit 746352b263f44ff650644d4a9f000142b8f9cbf6."
+      }
+    ]
+  }
+]

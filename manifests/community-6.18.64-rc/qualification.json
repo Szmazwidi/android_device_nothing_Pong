@@ -1,0 +1,48 @@
+{
+  "status": "SIGNED_FULL_OTA_APPLIED_BOOT_VERIFIED",
+  "kernel_release": "6.18.64-android17-5-maybe-dirty-4k",
+  "source_kernel_revision": "febb385ea217722658e25cebffc2e79171be69c7",
+  "source_modules_revision": "bc31a11678ace6bd8a2af7f33cf49278a169e201",
+  "device_revision": "21b50a2352bd6203452ab57f201551a86c60b08e",
+  "kernel_sha256": "93d6532bef52973dd1f0dd090c452b0a601de14c75db06f00790a7fdb8e398be",
+  "modules": 293,
+  "signed_module_copies_in_ota": 393,
+  "forced_module_signatures": true,
+  "qemu_module_admission": {
+    "status": "PASS",
+    "results": {
+      "unsigned.ko": -129,
+      "wrong-key.ko": -129,
+      "corrupt-signature.ko": -129,
+      "changed-signed.ko": 0,
+      "good.ko": 0
+    }
+  },
+  "ota_sha256": "7866230562f4c7eba6ee045dbbb4bf5d9b94900de4b7329cd3671f0190831976",
+  "rom_build": "1794843169",
+  "security_patch": "2026-11-01",
+  "ota_method": "standard-certified-recovery-sideload",
+  "factory_reset_performed": false,
+  "snapshot_settlement": "cleanup-succeeded-no-active-snapshots",
+  "post_unlock_shared_storage_readback_verified": true,
+  "wifi_validated": true,
+  "mobile_validated": true,
+  "retained_userspace_partitions": [
+    "dtbo",
+    "odm",
+    "product",
+    "recovery",
+    "system",
+    "system_ext",
+    "vbmeta_system",
+    "vendor"
+  ],
+  "known_limits": [
+    "RC on one Nothing Phone (2), 12 GB / 256 GB.",
+    "Clean installation and a clean resync of every Android project remain unqualified.",
+    "The physical recovery display and early boot display glitches need verification.",
+    "No long untethered battery or Bluetooth audio qualification after this update.",
+    "Installed uname uses Kleaf's unstamped -maybe-dirty suffix. Kernel and module source checkouts were clean.",
+    "No maintainer private signing keys are included."
+  ]
+}
