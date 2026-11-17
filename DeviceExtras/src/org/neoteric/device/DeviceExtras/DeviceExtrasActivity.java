@@ -17,29 +17,16 @@
 */
 package org.neoteric.device.DeviceExtras;
 
-import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import androidx.preference.PreferenceFragment;
-import androidx.preference.PreferenceManager;
+import androidx.activity.ComponentActivity;
+import org.neoteric.device.DeviceExtras.ui.DeviceExtrasUiKt;
 
-import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity;
-
-public class DeviceExtrasActivity extends CollapsingToolbarBaseActivity {
-
-    private DeviceExtras mDeviceExtrasFragment;
+public class DeviceExtrasActivity extends ComponentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Fragment fragment = getSupportFragmentManager().findFragmentById(com.android.settingslib.collapsingtoolbar.R.id.content_frame);
-	if (fragment == null) {
-            mDeviceExtrasFragment = new DeviceExtras();
-            getSupportFragmentManager().beginTransaction()
-                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame, mDeviceExtrasFragment)
-	        .commit();
-        } else {
-            mDeviceExtrasFragment = (DeviceExtras) fragment;
-        }
+        DeviceExtrasUiKt.attachDeviceExtrasUi(this, false);
     }
 }

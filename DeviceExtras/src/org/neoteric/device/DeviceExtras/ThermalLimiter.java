@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.display.DisplayManager;
+import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -43,6 +44,7 @@ import java.util.Set;
 
 public class ThermalLimiter implements OnPreferenceChangeListener {
     private static final String TAG = "ThermalLimiter";
+    private static final String KEY_THERMAL_STATE = "thermal_limiter_state";
 
     public static final String KEY_TEMP_WARM = "thermal_limiter_temp_warm";
     public static final String KEY_TEMP_HIGH = "thermal_limiter_temp_high";
@@ -54,8 +56,6 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
     public static final int TEMP_DEFAULT_CRITICAL = 45;
     public static final int TEMP_MIN = 35;
     public static final int TEMP_MAX = 60;
-
-    private static final String BATTERY_TEMP = "/sys/class/power_supply/battery/temp";
 
     private static final String CPU_LITTLE_MAX_FREQ = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
     private static final String[] CPU_LITTLE_CORES = {"cpu0", "cpu1", "cpu2", "cpu3"};
@@ -110,11 +110,6 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
     private static String mPrimeCeiling;
 
     public static boolean isSupported() {
-        if (!FileUtils.isFileReadable(BATTERY_TEMP)) {
-            Log.e(TAG, "Battery temperature path not readable");
-            return false;
-        }
-
         boolean cpuSupported = FileUtils.fileWritable(CPU_LITTLE_MAX_FREQ) &&
                                FileUtils.fileWritable(CPU_MID_MAX_FREQ) &&
                                FileUtils.fileWritable(CPU_PRIME_MAX_FREQ);
@@ -143,6 +138,8 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
 
         mContext = context.getApplicationContext();
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mCurrentThermalState = Math.max(STATE_NORMAL, Math.min(STATE_CRITICAL,
+                mPrefs.getInt(KEY_THERMAL_STATE, STATE_NORMAL)));
         mIsMonitoring = true;
         mHandler = new Handler(Looper.getMainLooper());
         cacheClusterCeilings();
@@ -202,6 +199,9 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
 
         mThrottledPackage = foreground;
         final int temperature = getBatteryTemperature();
+        if (temperature < 0) {
+            return INTERVAL_IDLE;
+        }
         adjustFrequencies(temperature);
         return getPollingInterval(temperature);
     }
@@ -269,7 +269,7 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
         requestImmediateCheck();
     }
 
-    private static void requestImmediateCheck() {
+    public static void requestImmediateCheck() {
         final Handler handler = mHandler;
         if (handler == null) {
             return;
@@ -358,28 +358,12 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
     }
 
     private static int getBatteryTemperature() {
-        String tempStr = FileUtils.readOneLine(BATTERY_TEMP);
-        if (tempStr == null) {
-            Log.e(TAG, "Failed to read battery temperature");
-            return 0;
+        Intent battery = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        if (battery == null || !battery.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false)) {
+            return -1;
         }
-        try {
-            int temp = Integer.parseInt(tempStr.trim());
-
-            if (temp > 1000) {
-                temp = temp / 10;
-            }
-
-            if (temp < 0 || temp > 800) {
-                Log.w(TAG, "Invalid temperature reading: " + temp);
-                return 0;
-            }
-
-            return temp;
-        } catch (NumberFormatException e) {
-            Log.e(TAG, "Failed to read battery temperature", e);
-            return 0;
-        }
+        int temperature = battery.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+        return temperature >= 0 && temperature <= 800 ? temperature : -1;
     }
 
     private static int getPollingInterval(int temperature) {
@@ -462,6 +446,7 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
 
         if (newState != mCurrentThermalState) {
             mCurrentThermalState = newState;
+            mPrefs.edit().putInt(KEY_THERMAL_STATE, newState).apply();
 
             setClusterFrequency(CPU_LITTLE_CORES, littleFreq);
             setClusterFrequency(CPU_MID_CORES, midFreq);
@@ -503,6 +488,7 @@ public class ThermalLimiter implements OnPreferenceChangeListener {
         }
 
         mCurrentThermalState = STATE_NORMAL;
+        mPrefs.edit().putInt(KEY_THERMAL_STATE, STATE_NORMAL).apply();
         Log.i(TAG, "Frequencies reset to normal");
     }
 

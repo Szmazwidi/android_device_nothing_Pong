@@ -1,6 +1,12 @@
-typeattribute device_extras mlstrustedsubject;
+typeattribute device_extras coredomain, mlstrustedsubject;
 
 app_domain(device_extras)
+
+# app_domain does not grant framework service discovery. Compose needs the
+# normal app services, including clipboard, input method, accessibility and UI mode.
+allow device_extras app_api_service:service_manager find;
+
+set_prop(device_extras, nt_charging_control_prop)
 
 allow device_extras {
   activity_service

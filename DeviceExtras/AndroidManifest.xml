@@ -27,10 +27,14 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.REAL_GET_TASKS" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        android:name=".DeviceExtras"
         android:label="@string/device_title"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
         android:persistent="true"
+        android:supportsRtl="true"
 	android:defaultToDeviceProtectedStorage="true"
 	android:enableOnBackInvokedCallback="true"
         android:directBootAware="true">
@@ -45,17 +49,13 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="org.neoteric.device.DeviceExtras"
-            android:exported="true" 
-            android:theme="@style/Theme.SubSettingsBase.Expressive"/>
-
         <!-- DeviceExtras -->
         <activity
             android:name="org.neoteric.device.DeviceExtras.DeviceExtrasActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/device_title"
-            android:theme="@style/Theme.SubSettingsBase.Expressive">
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
             <intent-filter>
                 <action android:name="com.android.settings.action.EXTRA_SETTINGS" />
             </intent-filter>
@@ -79,8 +79,9 @@
         <activity
             android:name="org.neoteric.device.DeviceExtras.ThermalAppsActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/thermal_limiter_apps_title"
-            android:theme="@style/Theme.SubSettingsBase.Expressive" />
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar" />
 
         <!-- OTG tile -->
         <service
