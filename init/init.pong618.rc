@@ -24,6 +24,14 @@ service vendor.pong618-dsp /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules s
     oneshot
     timeout_period 45
 
+service vendor.pong618-charger-adsp /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules adsp_loader_dlkm
+    user root
+    group root system
+    seclabel u:r:vendor_modprobe:s0
+    disabled
+    oneshot
+    timeout_period 45
+
 service vendor.pong618-battery /vendor/bin/modprobe -a -d /vendor_dlkm/lib/modules qti_battery_charger
     user root
     group root system

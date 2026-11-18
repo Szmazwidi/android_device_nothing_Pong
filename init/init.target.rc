@@ -122,8 +122,18 @@ on property:vendor.display.lcd_density=640
 on init && property:ro.boot.mode=charger
     wait_for_prop vendor.all.modules.ready 1
     mount_all /vendor/etc/charger_fw_fstab.qti --early
+
+on init && property:ro.boot.mode=charger && property:ro.vendor.pong.kernel=6.18
+    exec_start vendor.pong618-dsp
+    exec_start vendor.pong618-charger-adsp
+
+on init && property:ro.boot.mode=charger
     wait /sys/kernel/boot_adsp/boot
     write /sys/kernel/boot_adsp/boot 1
+
+on init && property:ro.boot.mode=charger && property:ro.vendor.pong.kernel=6.18
+    exec_start vendor.pong618-battery
+    wait /sys/class/power_supply/battery/capacity 5
 
 on property:init.svc.vendor.charger=running
     start vendor.power_off_alarm
