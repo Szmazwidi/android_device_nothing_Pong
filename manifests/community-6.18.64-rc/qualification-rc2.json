@@ -1,0 +1,36 @@
+{
+  "status": "SIGNED_FULL_OTA_APPLIED_AND_COLD_CHARGER_TESTED",
+  "device_revision": "d50347ca16c270cec86a727de77b22c1156ff387",
+  "source_kernel_revision": "febb385ea217722658e25cebffc2e79171be69c7",
+  "source_modules_revision": "bc31a11678ace6bd8a2af7f33cf49278a169e201",
+  "rom_build": "1795009331",
+  "ota_sha256": "b4037db98b9529e52623ce17fa4dedced9496b84be52f64c62252c0145ae0848",
+  "vbmeta_digest": "98ee4d834e30a9ae354f7ecb476d880def6f2ac0583a8e4cd54490400f284449",
+  "signed_partitions_verified": 13,
+  "existing_apk_signer_mappings_matched": 5417,
+  "vendor_modules_matched": 293,
+  "charger_init_files_verified": 2,
+  "android_build": {
+    "status": "COMPLETE_TARGET_FILES",
+    "manifest_projects": 1261,
+    "used_git_object_cache": true,
+    "reused_output_after_fixing_missing_headers": true
+  },
+  "device_test": {
+    "variant": "12 GB / 256 GB",
+    "ota_method": "recovery-sideload",
+    "factory_reset_performed": false,
+    "signed_alternate_slot_booted": true,
+    "snapshot_cleanup_succeeded": true,
+    "shared_storage_accessible_after_pin": true,
+    "wifi_validated": true,
+    "mobile_validated": true,
+    "charger_after_full_shutdown": "battery percentage displayed",
+    "subsequent_android_boot_verified": true,
+    "wifi_gateway_packets_after_cold_boot": [
+      3,
+      3
+    ],
+    "bluetooth_enabled_during_cold_boot_test": true
+  }
+}

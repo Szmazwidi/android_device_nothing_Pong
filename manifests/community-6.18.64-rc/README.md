@@ -1,15 +1,16 @@
 # Pong Android 17 / Linux 6.18.64 RC
 
-This directory records the source recipe for the signed DerpFest community
-candidate tested on 17 November 2026. The kernel is Linux 6.18.64 with the
-retained Android 17 ACK and Pong adaptations. The full OTA uses the verified
-16 November DerpFest userspace, with the matching 6.18.64 kernel and modules.
+This directory records the source recipe for the signed DerpFest RC2 OTA
+tested on 18 November 2026. The kernel is Linux 6.18.64 with the retained
+Android 17 ACK and Pong adaptations. RC2 rebuilds Android from the pinned
+sources and includes the power-off charger initialization fix.
 
 The tested kernel revision is
 `febb385ea217722658e25cebffc2e79171be69c7`. The matching module revision is
 `bc31a11678ace6bd8a2af7f33cf49278a169e201`. The functional device-tree
-revision is `21b50a2352bd6203452ab57f201551a86c60b08e`.
-[Qualification](qualification.json) records the host and device results.
+revision is `d50347ca16c270cec86a727de77b22c1156ff387`.
+[RC2 qualification](qualification-rc2.json) records the host and device results.
+[RC1 qualification](qualification.json) records the earlier OTA.
 [Attribution](ATTRIBUTION.md) records the source and contributor history.
 
 ## Kernel and all modules
@@ -51,18 +52,28 @@ qualification.
 
 ## Full Android source checkout
 
-`full.xml` pins 1,260 Android and manually attached device projects, including
-the audio MCS dependency. It uses public upstream bases for the three local
+`full.xml` pins 1,261 Android and device projects, including audio MCS and the
+Pong-Development 5.10 module tree used to export Qualcomm display and audio
+headers for Android. The 6.18 kernel build supplies the installed modules.
+The recipe uses public upstream bases for the three local
 power-HAL, libperfmgr and update-engine adaptations. Their source deltas and
 original commit metadata are in `patches/series.json`. The snapshot also
 includes the existing SELinux mapping and two boot-control changes.
 
 ```sh
 # Run in a new Android source directory, outside pong-build-support.
-repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 17
+repo init --git-lfs -u https://github.com/DerpFest-AOSP/android_manifest.git -b 17
 cp "$recipe/full.xml" .repo/manifests/pong618.xml
-repo init -m pong618.xml
+repo init --git-lfs -m pong618.xml
 repo sync -c -j4
+
+for project in vendor/nothing/Pong vendor/pixel/gms; do
+  (
+    set -o pipefail
+    cd "$project" || exit 1
+    git lfs ls-files --long HEAD | sed -E 's/^([0-9a-f]{64}) [*-] /\1  /' | sha256sum --strict --check --quiet
+  ) || exit 1
+done
 
 python3 "$recipe/apply-snapshot.py" --check
 python3 "$recipe/apply-snapshot.py"
@@ -73,9 +84,12 @@ digest before applying changes. Running it again verifies an already-applied
 snapshot. Local tests applied all six patch entries in isolated checkouts and
 verified the result and the repeated check.
 
-All Android projects have pinned Git revisions. A complete download and build
-in a newly empty Android checkout remain unqualified. Repository access, Git
-LFS dependencies and the usual Android build dependencies are required.
+The RC2 checkout used an existing tree as a Git object cache and a separate
+output directory. Compiling the display HAL exposed the missing header
+dependency. After adding it, both display objects compiled and the full
+target-files build completed in the same output directory. The vendor and
+GMS LFS files matched their pinned digests. A full uncached download has
+yet to be tested.
 
 ## Import the source-built kernel
 
@@ -87,21 +101,31 @@ kernel_workspace=/absolute/path/to/pong-kernel-workspace
 art="$kernel_workspace/out/pong-community-6.18.64"
 bank="$PWD/device/nothing/Pong-kernel"
 tools="$kernel_workspace/devices/pong618/tools"
+lists=$(mktemp -d)
+for name in modules.load modules.load.vendor_boot modules.list.vendor_boot; do
+  git -C "$bank" show "HEAD:$name" > "$lists/$name" || exit 1
+done
 
 python3 "$bank/import-source-build.py" --check-only \
   --kernel "$art/kernel-final" --signed "$art/signed" --frozen "$art/frozen" \
   --reference "$recipe/kernel-build-reference.json" --source-tools "$tools" \
-  --destination "$bank" --lists "$bank"
+  --destination "$bank" --lists "$lists"
 python3 "$bank/import-source-build.py" \
   --kernel "$art/kernel-final" --signed "$art/signed" --frozen "$art/frozen" \
   --reference "$recipe/kernel-build-reference.json" --source-tools "$tools" \
-  --destination "$bank" --lists "$bank"
+  --destination "$bank" --lists "$lists"
 
 export WITH_GMS=true TARGET_PONG_KERNEL=6.18
+export BUILD_DATETIME=$(date +%s)
+export BUILD_NUMBER="$BUILD_DATETIME"
 source build/envsetup.sh
 lunch lineage_Pong-cp2a-user
 m -j4 target-files-package
 ```
+
+Keep this checkout and its `out` directory for subsequent edits. Running the
+same target reuses completed compilation steps. An empty output directory is
+useful for checking the published recipe independently.
 
 The prebuilt repository pinned by `full.xml` provides the tested DTB, DTBO and
 startup lists. The import replaces its kernel and module cohort with the
@@ -109,30 +133,33 @@ fresh source build. It verifies every module and certificate before writing,
 and requires the destination checkout to be clean. The imported bank has
 293 modules and 100 first-stage modules.
 
-Sign the target-files and OTA with maintainer-owned keys using
-`device/nothing/Pong/tools/prepare-release-keys.py` and
-`device/nothing/Pong/tools/sign-community.py`. The
-[signing instructions](../community-clg43/README.md#kernel-sources-and-signing)
+Sign the target-files and OTA with maintainer-owned keys using the tools in
+the support checkout, which includes the OTA identity guard. Pass
+`--previous-ota /path/to/last-trusted-Pong.zip` to
+`sign-community.py` on every update. The build timestamp and numeric
+incremental must both increase. Set a fresh build date and number before
+building Android; editing ZIP metadata does not change the installed
+properties. Use `--first-release` only for a new signing track. To check
+an already packaged OTA, including one produced by an alternate packager,
+run `python3 "$recipe/../../tools/ota_identity.py" previous.zip candidate.zip`.
+The [signing instructions](../community-clg43/README.md#kernel-sources-and-signing)
 describe the key backup and signing process. Preserve existing vendor
 PRESIGNED identities. Maintainer private keys are kept outside the repositories.
 A self-built image signed with different keys needs a separately qualified
 installation and data-migration procedure.
 
-## Installed RC
+## Installed RC2
 
-The tested full OTA contains 13 signed partitions, including recovery.
-All payload image digests and the AVB chain were verified. It was installed
-using the existing recovery's standard sideload path. Android completed boot
-on 6.18.64 with enforcing SELinux and verity. After PIN unlock, shared storage
-was accessible and a pre-update file's SHA-256 still matched. Wi-Fi and mobile
-networks were validated by Android.
+The signed full OTA covers 13 partitions, including recovery. The payload
+image digests, package signature and AVB chain passed verification. Android
+booted on the alternate slot after recovery sideload. Shared storage remained
+accessible after PIN unlock and Android validated Wi-Fi and mobile data.
 
-The qualification applies to one 12 GB / 256 GB Nothing Phone (2). Physical
-recovery rendering, early-boot display glitches, clean installation, long
-untethered battery behavior and extended Bluetooth audio tests remain open.
-The OTA's standalone `recovery.img` is byte-identical to the recovery in the
-verified 16 November target-files. Its SHA-256 is
-`d97b7b928bca5b8981118f180c0c212e81beb6c12440202503a7ceaf9cb3739b`.
+After a full shutdown, connecting a charger displayed the battery percentage.
+The phone then booted the same signed RC2 image and reached the Wi-Fi gateway
+with Bluetooth enabled.
 
-Build, signing, OTA, and physical-feature evidence have separate scopes in
-`qualification.json`.
+The test covered one 12 GB / 256 GB Nothing Phone (2). Cold Wi-Fi reconnect
+with Bluetooth and BLE scanning disabled, physical recovery rendering,
+early-boot display glitches, clean installation, long battery tests and
+extended Bluetooth audio remain open.

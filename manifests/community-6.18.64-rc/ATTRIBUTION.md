@@ -32,6 +32,10 @@ links the earlier Android, Rust, xHCI, WLAN and FastRPC work.
 
 ## Android userspace
 
+The Android build takes the Qualcomm audio and display UAPI headers from
+the [Pong-Development module tree at the pinned revision](https://github.com/Pong-Development/kernel_nothing_sm8475-modules/tree/ab6a3a7461ea649faea4151952acb6cf3165a891).
+The two header directories match the Git trees used by the earlier working build.
+
 The device-tree integration retains the author metadata of donor commits,
 including Ghosuto's DeviceExtras, ADPF, thermal and power-hint work and the
 display and Bluetooth contributors. The local follow-ups retain their

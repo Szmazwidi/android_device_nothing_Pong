@@ -1,6 +1,13 @@
 {
   "status": "HOST_RECIPE_CHECKS_PASS",
-  "android_projects": 1260,
+  "android_projects": 1261,
+  "external_header_source": {
+    "path": "kernel/nothing/sm8475-modules",
+    "project": "Pong-Development/kernel_nothing_sm8475-modules",
+    "revision": "ab6a3a7461ea649faea4151952acb6cf3165a891",
+    "audio_uapi_tree": "5e7f0998d5b7451491070fe04383f92a49d8f272",
+    "display_uapi_tree": "cc587bcc81a4b3d9b20bdd544ce9ddf51636328f"
+  },
   "all_project_revisions_immutable": true,
   "local_remote_urls": false,
   "snapshot_patch_entries": 6,

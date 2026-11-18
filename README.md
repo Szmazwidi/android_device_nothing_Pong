@@ -3,10 +3,10 @@
 This branch contains the Android 17 / Linux 6.18.64 RC device configuration.
 The [6.18.64 build recipe](manifests/community-6.18.64-rc/README.md) pins the
 kernel, all modules and the Android source snapshot. It includes the charging,
-DeviceExtras and power-HAL follow-ups used in the signed OTA tested on
-17 November 2026.
+DeviceExtras and power-HAL changes used in the RC2 OTA tested on
+18 November 2026.
 
-See the [qualification](manifests/community-6.18.64-rc/qualification.json) for
+See the [qualification](manifests/community-6.18.64-rc/qualification-rc2.json) for
 tested behavior and open release gates, and the
 [attribution record](manifests/community-6.18.64-rc/ATTRIBUTION.md) for
 Szmazwidi, OpenAI Codex, Claude, upstream and donor contributions.
