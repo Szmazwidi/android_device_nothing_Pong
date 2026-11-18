@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import tempfile
 import zipfile
+from ota_identity import check as check_ota_identity
 
 
 def run(argv, **kwargs):
@@ -75,6 +76,7 @@ def identity(prefix, keys, backup):
 
 
 def sign(args):
+    expected_identity = check_ota_identity(args.target_files, args.previous_ota, target_files=True)
     root = args.android.resolve()
     keys, backup = args.keys.resolve(), args.backup.resolve()
     args.output.mkdir(mode=0o700, parents=True, exist_ok=False)
@@ -209,11 +211,14 @@ def sign(args):
                 raise ValueError('Signed vbmeta still disables verification')
         report['status'] = 'BUILDING_SIGNED_OTA'
         save()
-        ota = args.output.resolve() / 'DerpFest-Pong-6.18.60-community-candidate.zip'
+        ota = args.output.resolve() / f'DerpFest-Pong-community-{expected_identity[1]}.zip'
         with (args.output / 'ota.log').open('wb') as log:
             subprocess.run([str(host / 'ota_from_target_files'), '-k', str(keys / 'releasekey'),
                             str(signed), str(ota)], cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT,
                            check=True, timeout=7200)
+        if check_ota_identity(ota, args.previous_ota) != expected_identity:
+            raise ValueError('Signed OTA identity differs from the target-files')
+        report['build_timestamp'], report['build_incremental'] = expected_identity
         with ota.open('rb') as stream:
             report['ota_sha256'] = hashlib.file_digest(stream, 'sha256').hexdigest()
         ota.with_name(ota.name + '.sha256sum').write_text(report['ota_sha256'] + '  ' + ota.name + '\n')
@@ -227,6 +232,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('android', 'target-files', 'keys', 'backup', 'output', 'work'):
         parser.add_argument('--' + name, type=Path, required=True)
+    history = parser.add_mutually_exclusive_group(required=True)
+    history.add_argument('--previous-ota', type=Path, help='Last trusted release on this signing track')
+    history.add_argument('--first-release', action='store_true', help='First release of a new signing track only')
     args = parser.parse_args()
     os.umask(0o077)
     sign(args)

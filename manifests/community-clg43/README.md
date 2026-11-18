@@ -59,6 +59,7 @@ Private keys are unencrypted and protected by directory mode 0700 / file mode
 python3 ../pong-build-support/tools/prepare-release-keys.py \
   --keys /private/pong-keys --backup /separate-backup/pong-keys
 python3 ../pong-build-support/tools/sign-community.py \
+  --previous-ota /path/to/last-trusted-Pong.zip \
   --android "$PWD" \
   --target-files out/target/product/Pong/obj/PACKAGING/target_files_intermediates/lineage_Pong-target_files.zip \
   --keys /private/pong-keys --backup /separate-backup/pong-keys \
