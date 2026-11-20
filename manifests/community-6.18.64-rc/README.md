@@ -13,6 +13,9 @@ revision is `d50347ca16c270cec86a727de77b22c1156ff387`.
 [RC1 qualification](qualification.json) records the earlier OTA.
 [Attribution](ATTRIBUTION.md) records the source and contributor history.
 
+The [LHDCv5 experiment](experiments/lhdcv5/README.md) is an optional Android
+source overlay for RC2. Its playback test is pending.
+
 ## Kernel and all modules
 
 Use Linux with the Android kernel build dependencies, `repo`, Git and an

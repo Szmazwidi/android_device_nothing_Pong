@@ -1,0 +1,119 @@
+{
+  "status": "SIGNED_LHDC_SELECTIVE_OTA_REPLAY_VERIFIED",
+  "profile": "LHDCv5 software; existing A2DP offload preserved",
+  "ota_sha256": "a938725befda51c40d862c77d863d38221cd81225c5da76129e14b88bc36eee5",
+  "ota_bytes": 3550560567,
+  "partitions_replayed": 13,
+  "changed_partitions": [
+    "system",
+    "vbmeta_system",
+    "vbmeta_vendor",
+    "vendor"
+  ],
+  "avb_flags_and_rollback_indexes_unchanged": true,
+  "data_wipe": false,
+  "lhdc_receiver_playback_verified": false,
+  "a2dp_route_checks": {
+    "status": "STATIC_DECLARED_ROUTE_MATCHES_VERIFIED",
+    "ro.bluetooth.a2dp_offload.supported": true,
+    "profiles": {
+      "default": {
+        "AUDIO_DEVICE_OUT_BLUETOOTH_A2DP": {
+          "DEFAULT": "primary",
+          "AAC": "primary",
+          "APTX": "primary",
+          "APTX_HD": "primary",
+          "LDAC": "primary",
+          "LHDC": "bluetooth",
+          "SBC": "primary"
+        },
+        "AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES": {
+          "DEFAULT": "primary",
+          "AAC": "primary",
+          "APTX": "primary",
+          "APTX_HD": "primary",
+          "LDAC": "primary",
+          "LHDC": "bluetooth",
+          "SBC": "primary"
+        },
+        "AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER": {
+          "DEFAULT": "primary",
+          "AAC": "primary",
+          "APTX": "primary",
+          "APTX_HD": "primary",
+          "LDAC": "primary",
+          "LHDC": "bluetooth",
+          "SBC": "primary"
+        }
+      },
+      "cape": {
+        "AUDIO_DEVICE_OUT_BLUETOOTH_A2DP": {
+          "DEFAULT": "primary",
+          "AAC": "primary",
+          "APTX": "primary",
+          "APTX_ADAPTIVE": "primary",
+          "APTX_HD": "primary",
+          "APTX_TWSP": "primary",
+          "CELT": "primary",
+          "LDAC": "primary",
+          "LHDC": "bluetooth",
+          "SBC": "primary"
+        },
+        "AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES": {
+          "DEFAULT": "primary",
+          "AAC": "primary",
+          "APTX": "primary",
+          "APTX_ADAPTIVE": "primary",
+          "APTX_HD": "primary",
+          "APTX_TWSP": "primary",
+          "CELT": "primary",
+          "LDAC": "primary",
+          "LHDC": "bluetooth",
+          "SBC": "primary"
+        },
+        "AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER": {
+          "DEFAULT": "primary",
+          "AAC": "primary",
+          "APTX": "primary",
+          "APTX_ADAPTIVE": "primary",
+          "APTX_HD": "primary",
+          "APTX_TWSP": "primary",
+          "CELT": "primary",
+          "LDAC": "primary",
+          "LHDC": "bluetooth",
+          "SBC": "primary"
+        }
+      }
+    },
+    "on_device_verified": false
+  },
+  "bluetooth_apex_diff": {
+    "added": [],
+    "removed": [],
+    "changed": [
+      "lib64/libbluetooth_jni.so"
+    ]
+  },
+  "audio_policy_schema": {
+    "etc/audio_policy_configuration.xml": {
+      "baseline": {
+        "valid": true,
+        "error_count": 0
+      },
+      "trial": {
+        "valid": true,
+        "error_count": 0
+      }
+    },
+    "etc/audio/sku_cape/audio_policy_configuration.xml": {
+      "baseline": {
+        "valid": false,
+        "error_count": 6
+      },
+      "trial": {
+        "valid": false,
+        "error_count": 6
+      }
+    }
+  }
+}
